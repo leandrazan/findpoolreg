@@ -155,4 +155,3 @@ compute_teststat <- function(data, temp.cov, equal_distr = TRUE) {
   data.frame(teststat = val, p = stats::pchisq(val, df = dftest,
                                                 lower.tail = FALSE))
 }
-
