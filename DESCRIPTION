@@ -12,7 +12,14 @@ LazyData: true
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
 Suggests: 
+    numDeriv,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 URL: https://github.com/leandrazan/findpoolreg
 BugReports: https://github.com/leandrazan/findpoolreg/issues
+Imports: 
+    SpatialExtremes,
+    evd,
+    purrr,
+    tidyr,
+    dplyr

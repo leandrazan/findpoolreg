@@ -28,8 +28,6 @@ If \code{FALSE}, a scale-GEV-model is fitted seperatly to each station. to fit m
 
 \item{returnRatios}{logical and only relevant if \code{hom = TRUE}: when TRUE, location-scale- and trend-location-parameter ratios are returned,
 when FALSE, the plain parameters are returned.}
-
-\item{hessian}{logical; whether to return the numerically differentiated Hessian matrix.}
 }
 \value{
 A list containing the estimated parameter values in \code{mle} and

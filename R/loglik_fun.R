@@ -78,8 +78,8 @@ nll_scalegev <- function(params, data, temp.cov){
 #' # generate 3 dimensional data:
 #' xx <- matrix(rep(exp((1:100)/100), 3)*evd::rgev(300), ncol = 3)
 #' fit_scalegev(data = xx, temp.cov = (1:100)/100, printStartVals = TRUE)
-fit_scalegev <- function(data, temp.cov, method = "BFGS", maxiter = 100,
-                         hessian = TRUE, returnCov = FALSE, printStartVals = FALSE) {
+fit_scalegev <- function(data, temp.cov, method = "BFGS", maxiter = 200,
+                         hessian = TRUE, printStartVals = FALSE) {
 
   d.dat <- ncol(data)
   if(is.null(d.dat)) { d.dat <- 1}
@@ -98,7 +98,7 @@ fit_scalegev <- function(data, temp.cov, method = "BFGS", maxiter = 100,
   if(printStartVals) {print(start_vals)}
 
   # optimise log-likelihood
-  mlest <- optim(start_vals, fn = nll_scalegev,
+  mlest <- stats::optim(start_vals, fn = nll_scalegev,
                  data = data, temp.cov = temp.cov,
                  method = method, control = list(maxit = maxiter),
                  hessian = hessian)
@@ -201,7 +201,6 @@ nll_scalegev_hom <- function(params, data, temp.cov){
 #' If `FALSE`, a scale-GEV-model is fitted seperatly to each station. to fit model with homogeneity constraint. If
 #' @param method  Method passed to [stats::optim()].
 #' @param maxiter Maximum number of iterations during maximisation (also passed to [stats::optim()]).
-#' @param hessian logical; whether to return the numerically differentiated Hessian matrix.
 #' @param returnRatios logical and only relevant if `hom = TRUE`: when TRUE, location-scale- and trend-location-parameter ratios are returned,
 #' when FALSE, the plain parameters are returned.
 #'
@@ -242,7 +241,7 @@ fit_spat_scalegev <- function(data, temp.cov, hom = FALSE, method = "BFGS",
 
     names(start_vals ) <- c(paste0("mu_", 1:d), "delta", "gamma", "eta")
     # print(start_vals)
-    mlest <- optim(start_vals, fn = nll_scalegev_hom,
+    mlest <- stats::optim(start_vals, fn = nll_scalegev_hom,
                    data = data, temp.cov = temp.cov,  method = method,
                    control = list(maxit = maxiter))
     if(!(mlest$convergence == 0) ){print("Optimization didn't succeed.")}

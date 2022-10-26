@@ -121,7 +121,7 @@ teststat <- function(theta, covmat, n, equal_distr = TRUE) {
 
     tn <- tryCatch(n*as.numeric(hth %*%  solve(grh %*% covmat %*% t(grh)) %*% hth),
              error = function(egal) {NA})
-    if(is.na(tn)) { print(" Covariance matrix of h(theta) is singular.")}
+    if(is.na(tn)) { warning(" Covariance matrix of h(theta) is singular.")}
     tn
   }
 
@@ -146,6 +146,7 @@ teststat <- function(theta, covmat, n, equal_distr = TRUE) {
 compute_teststat <- function(data, temp.cov, equal_distr = TRUE) {
 
   d <- ncol(data)
+  if(is.null(d)) {stop("Data must have dimension at least 2.")}
   mlest <- tryCatch(fit_spat_scalegev(data, temp.cov, hom = FALSE),
                     error = function(egal) list(mle = NA, cov.mat = NA))
 

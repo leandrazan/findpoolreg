@@ -8,9 +8,8 @@ fit_scalegev(
   data,
   temp.cov,
   method = "BFGS",
-  maxiter = 100,
+  maxiter = 200,
   hessian = TRUE,
-  returnCov = FALSE,
   printStartVals = FALSE
 )
 }
