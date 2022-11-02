@@ -32,7 +32,12 @@ generate_bootsamp_unitfrech(
 \item{warn_msfit}{logical; whether to print warnings possibly generated during fitting the max-stable process.}
 }
 \value{
-Returns a list of  \code{B} bootstrap samples, each being a matrix of same dimension as input data.
+Returns a list of  3.
+\itemize{
+\item \code{X_star} contains the \code{B} bootstrap samples, each being a matrix of same dimension as input data.
+\item \code{covmod} is the covariance model of the chosen max-stable process
+\item \code{parhat} the parameters of the chosen max-stable process
+}
 }
 \description{
 This function transform margins to unit Frechet, fits several max-stable models to
@@ -51,6 +56,6 @@ xx <- generateData(seed = 1, d = d, locations = coords,
 bootsamps <- generate_bootsamp_unitfrech(xx, temp.cov = (1:100)/100, locations = coords,
                                         ms_models = c("powexp", "gauss", "brown"), B = 2,
                                          sel_crit = "TIC", warn_msfit = FALSE)
-plot.ts(bootsamps[[1]])
-plot.ts(bootsamps[[2]])
+plot.ts(bootsamps$X_star[[1]])
+plot.ts(bootsamps$X_star[[2]])
 }

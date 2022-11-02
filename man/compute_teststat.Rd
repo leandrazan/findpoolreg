@@ -4,15 +4,19 @@
 \alias{compute_teststat}
 \title{Compute a data frame containing the value of the test statistic and p-value from the data}
 \usage{
-compute_teststat(data, temp.cov, equal_distr = TRUE)
+compute_teststat(data, temp.cov, H0 = "ED", varmeth = "chain")
 }
 \arguments{
 \item{data}{Matrix or data frame of observations. Each column corresponds to one station/region.}
 
 \item{temp.cov}{Temporal covariate with same record length as data.}
 
-\item{equal_distr}{Logical; if \code{TRUE} (the default) the hypothesis is the one of equal distributions across
-the different stations. If \code{FALSE}, the hypothesis is that the local scaling model holds across the region.}
+\item{H0}{Either 'ED' for 'Equal distribution, i.e. the hypothesis is the one of equal distributions across
+the different stations, or 'LS' for 'Local Scaling', i.e. the hypothesis is that the local scaling model holds across the region.}
+
+\item{varmeth}{Method for estimation of variance-covariance matrix. Can be either \code{chain} (the default) for an estimator based
+on the multivariate chain rule, or \code{basic} for a very simplistic but faster method. Passed to
+\link[findpoolreg]{fit_spat_scalegev}.}
 }
 \value{
 A data frame with columns
@@ -27,5 +31,5 @@ Compute a data frame containing the value of the test statistic and p-value from
 \examples{
  # generate 3 dimensional data:
 xx <- matrix(rep(exp((1:100)/100), 3)*evd::rgev(300), ncol = 3)
-compute_teststat(data = xx, temp.cov = (1:100)/100, equal_distr = TRUE)
+compute_teststat(data = xx, temp.cov = (1:100)/100, H0 = "ED")
 }

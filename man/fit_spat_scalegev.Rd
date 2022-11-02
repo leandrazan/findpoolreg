@@ -10,7 +10,8 @@ fit_spat_scalegev(
   hom = FALSE,
   method = "BFGS",
   maxiter = 200,
-  returnRatios = TRUE
+  returnRatios = TRUE,
+  varmeth = "chain"
 )
 }
 \arguments{
@@ -28,6 +29,9 @@ If \code{FALSE}, a scale-GEV-model is fitted seperatly to each station. to fit m
 
 \item{returnRatios}{logical and only relevant if \code{hom = TRUE}: when TRUE, location-scale- and trend-location-parameter ratios are returned,
 when FALSE, the plain parameters are returned.}
+
+\item{varmeth}{Method for estimation of variance-covariance matrix. Can be either \code{chain} (the default) for an estimator based
+on the multivariate chain rule, or \code{basic} for a very simplistic but faster method.}
 }
 \value{
 A list containing the estimated parameter values in \code{mle} and

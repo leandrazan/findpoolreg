@@ -4,17 +4,19 @@
 \alias{teststat}
 \title{Test statistic for testing the hypothesis of Equal Distribution or localing scaling model}
 \usage{
-teststat(theta, covmat, n, equal_distr = TRUE)
+teststat(theta, covmat, H0 = "ED", covmat_scaled = TRUE, n = NULL)
 }
 \arguments{
 \item{theta}{Matrix containing estimated parameter values. Each column corresponds to one region.}
 
 \item{covmat}{Estimated variance-covariance matrix of the estimated parameters.}
 
-\item{n}{Record length.}
+\item{H0}{Either 'ED' for 'Equal distribution, i.e. the hypothesis is the one of equal distributions across
+the different stations, or 'LS' for 'Local Scaling', i.e. the hypothesis is that the local scaling model holds across the region.}
 
-\item{equal_distr}{Logical; if \code{TRUE} (the default) the hypothesis is the one of equal distributions across
-the different stations. If \code{FALSE}, the hypothesis is that the local scaling model holds across the region.}
+\item{covmat_scaled}{Logical; whether covariance matrix is scaled by record length.}
+
+\item{n}{Record length, only needs to be provided if covariance matrix is not scaled by n already.}
 }
 \value{
 The numeric value of the test statistic.
@@ -30,5 +32,5 @@ xx <- matrix(rep(exp((1:100)/100), 3)*evd::rgev(300), ncol = 3)
 mlest <- fit_spat_scalegev(data = xx, temp.cov = (1:100)/100, hom = FALSE)
 
 # compute test statistic
-teststat(mlest$mle, covmat = mlest$cov.mat, n = 100, equal_distr = TRUE)
+teststat(mlest$mle, covmat = mlest$cov.mat, n = 100, H0 = "ED")
 }

@@ -1,6 +1,21 @@
 
 # computes \dot \ell_{(0, 1, \gamma)}(( x- mut)/sigmat)
-score_standard_univ <- function(x, theta, temp.cov = NULL, rel_par = TRUE) {
+#' Computes three dimensional score function of data with margins transformed to standard GEV
+#'
+#' @param x Numeric vector of observations from the scale-GEV-model
+#' @param theta Parameter vector of the scale-GEV-model
+#' @param temp.cov Values of temporal covariate; numeric vector of same length as x
+#' @param rel_par Logical; whether `theta` contains the plain parameters \eqn{\mu, \sigma, \gamma, \alpha},
+#' or relative values \eqn{\mu, \mu/\sigma, \gamma, \alpha/\mu}.
+#'
+#' @return A matrix of dimension \eqn{3\times} `length(x)` containing the values of
+#' \deqn{ \dot\ell_{(0,1, \gamma)} \left( \frac{ x - \mu(gmst(t))}{\sigma(gmst(t))} \right).}
+#' @export
+#'
+#' @examples
+#'  xx <- exp((1:100)/100)*evd::rgev(100)
+#'  score_standard_univ(x = xx, theta = c(10, 2, 0, 1), temp.cov = (1:100)/100, rel_par = FALSE)
+score_standard_univ <- function(x, theta, temp.cov = NULL, rel_par = FALSE) {
 
   if(is.null(temp.cov)) {stop("Temporal covariate must be provided.")}
 
@@ -52,10 +67,36 @@ score_standard_univ <- function(x, theta, temp.cov = NULL, rel_par = TRUE) {
 }
 
 
-estimate_gammas <- function(data, parmat, temp.cov = NULL, rel_par = TRUE) {
+#' Computes cross-covariance matrix of score function applied to columns of
+#' data transformed to standard GEV distribution
+#'
+#' The empirical covariance matrices of
+#' \deqn{ (\dot\ell_{(0, 1, \hat\gamma_j)}( (x_t - \mu_j(gmst(t)) )/\sigma_j(gmst(t))) )_t \text{ and }
+#' (\dot\ell_{(0, 1, \hat\gamma_k)}( (x_t - \mu_k(gmst(t)) )/\sigma_k(gmst(t))) )_t}
+#'
+#'  are needed for each combination of \eqn{j, k} in the estimation of the ML estimator's covariance matrix.
+#'
+#'
+#' @param data Matrix of observations.
+#' @param parmat Matrix of parameters of the scale-GEV-model. Each column corresponds to one station.
+#' @param temp.cov  Values of temporal covariate; numeric vector of length as `nrow(data)`.
+#' @param rel_par Logical; whether `theta` contains the plain parameters \eqn{\mu, \sigma, \gamma, \alpha},
+#' or relative values \eqn{\mu, \mu/\sigma, \gamma, \alpha/\mu}.
+#'
+#' @return A \eqn{d\times d} matrix.
+#' @export
+#'
+#' @examples
+#' # generate data
+#' cvrt <- (1:50)/50
+#' d <- 4
+#' coords <- matrix(20*abs(stats::rnorm(d*2)), ncol = 2)
+#' x <- generateData(seed = 1, n = 50, temp.cov = cvrt, d= d, locations = coords)
+#' mle <- fit_spat_scalegev(x, temp.cov =cvrt)
+#' estimate_gammas(x, parmat = mle$mle, temp.cov =cvrt, rel_par = FALSE)
+estimate_gammas <- function(data, parmat, temp.cov = NULL, rel_par = FALSE) {
   n <- nrow(data)
   d <- ncol(data)
-
   scores <- array(dim = c(3, n, d))
   Gammas <- array(dim = c(3*d,3*d))
   for( j in 1:d ) {
@@ -63,13 +104,15 @@ estimate_gammas <- function(data, parmat, temp.cov = NULL, rel_par = TRUE) {
   }
   for (j in 1:d) {
     for (k in j:d) {
-      Gammas[ ((j -1)*3 +1) : (j*3), ((k -1)*3 +1) : (k*3) ] <-
-        Gammas[ ((k -1)*3 +1) : (k*3), ((j -1)*3 +1) : (j*3) ] <- cov(t(scores[, , j]), t(scores[ , , k]))
+      Gammas[ ((j -1)*3 +1) : (j*3), ((k -1)*3 +1) : (k*3) ] <- cov(t(scores[, , j]), t(scores[ , , k]))
+      Gammas[ ((k -1)*3 +1) : (k*3), ((j -1)*3 +1) : (j*3) ] <- t(Gammas[ ((j -1)*3 +1) : (j*3), ((k -1)*3 +1) : (k*3) ] )
     }
   }
   Gammas
 }
 
+
+# compute entries of matrices B_c(mu, sigma, alpha)
 Bmat <- function(par, temp.cov) {
 
   n <- length(temp.cov)
@@ -80,7 +123,7 @@ Bmat <- function(par, temp.cov) {
 
   expo <- exp(alpha/mu * temp.cov)
 
-  b11 <- ( 1- alpha*temp.cov/mu)*temp.cov
+  b11 <- ( 1- alpha*temp.cov/mu)*expo
   b12 <- - sigma*alpha*temp.cov/mu^2*expo
   b13 <- rep(0, n)
 
@@ -99,6 +142,7 @@ Bmat <- function(par, temp.cov) {
 
 }
 
+# assemble the matrices B_c(mu, sigma, alpha) for each value of c
 assemble_mat <- function(b11, b12, b13, b21, b22, b23, b31, b32, b33, b41, b42, b43) {
   Bs <- list()
 
@@ -114,6 +158,7 @@ assemble_mat <- function(b11, b12, b13, b21, b22, b23, b31, b32, b33, b41, b42, 
 
 }
 
+# compute the matrices T_sigma(c)^(-1) for each value of c
 Tsigma_inv <- function(par, temp.cov) {
 
   mu <- par[1]
@@ -125,6 +170,38 @@ Tsigma_inv <- function(par, temp.cov) {
 
 }
 
+# compute Sigma_{jk}
+
+#' Estimate covariance of ML estimation applied to two stations
+#'
+#' @param par.j Estimated parameter vector for station j
+#' @param par.k Estimated parameter vector for station k
+#' @param Gammajk Estimated covariance matrix of score function applied to data standardised to GEV margins,
+#' as computed by \code{\link[findpoolreg]{estimate_gammas}}
+#' @param temp.cov Values of temporal covariate
+#' @param Jinv.j Inverse of hessian returned by calling \code{\link[findpoolreg]{fit_scalegev}} on data from station j
+#' @param Jinv.k Inverse of hessian returned by calling \code{\link[findpoolreg]{fit_scalegev}} on data from station k
+#'
+#' @return A 4x4 matrix containing an estimation of
+#' \deqn{ \Cov( \hat \vartheta_j, \hat\vartheta_k).}
+#' @export
+#'
+#' @examples
+#'
+#' # generate data
+#' cvrt <- (1:50)/50
+#' d <- 4
+#' coords <- matrix(20*abs(stats::rnorm(d*2)), ncol = 2)
+#' x <- generateData(seed = 1, n = 50, temp.cov = cvrt, d= d, locations = coords)
+#'
+#' # compute ML estimate at each station
+#' mle1 <- fit_scalegev(x[, 1], temp.cov =cvrt)
+#' mle3 <- fit_scalegev(x[, 3], temp.cov =cvrt)
+#'
+#'
+#' # compute covariance between ML estimate of station 1 and ML estimate of station 3
+#' Gams <-  estimate_gammas(x[, c(1,3)], parmat = cbind(mle1$mle, mle3$mle), temp.cov =cvrt, rel_par = FALSE)
+#' compute_sigmajk(mle1$mle, mle3$mle, Gams[ 1:3, 4:6], cvrt, solve(mle1$hessian), solve(mle3$hessian))
 
 compute_sigmajk <- function(par.j, par.k, Gammajk, temp.cov, Jinv.j , Jinv.k) {
 

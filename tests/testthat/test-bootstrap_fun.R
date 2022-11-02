@@ -8,6 +8,6 @@ test_that("Generating unit Frechet bootstrap samples works", {
 
   bootsamps <- generate_bootsamp_unitfrech(xx, temp.cov = (1:100)/100, locations = coords,
                                            ms_models = c("powexp", "gauss", "brown"), B = 4, sel_crit = "AIC", warn_msfit = FALSE)
-  expect_identical(dim(bootsamps[[1]]), c(100L, d))
-  expect_length(bootsamps, 4)
+  expect_identical(dim(bootsamps$X_star[[1]]), c(100L, d))
+  expect_length(bootsamps$X_star, 4)
 })

@@ -203,6 +203,8 @@ nll_scalegev_hom <- function(params, data, temp.cov){
 #' @param maxiter Maximum number of iterations during maximisation (also passed to [stats::optim()]).
 #' @param returnRatios logical and only relevant if `hom = TRUE`: when TRUE, location-scale- and trend-location-parameter ratios are returned,
 #' when FALSE, the plain parameters are returned.
+#' @param varmeth Method for estimation of variance-covariance matrix. Can be either `chain` (the default) for an estimator based
+#' on the multivariate chain rule, or `basic` for a very simplistic but faster method.
 #'
 #' @return A list containing the estimated parameter values in `mle` and
 #' * if `hom = TRUE`:  the value of the negative log-likelihood and a convergence code
@@ -225,7 +227,7 @@ nll_scalegev_hom <- function(params, data, temp.cov){
 #' fit_spat_scalegev(data = xx, temp.cov = (1:100)/100, hom = TRUE, returnRatios = FALSE)$mle
 #'
 fit_spat_scalegev <- function(data, temp.cov, hom = FALSE, method = "BFGS",
-                           maxiter = 200, returnRatios = TRUE) {
+                           maxiter = 200, returnRatios = TRUE, varmeth = "chain") {
 
   if(!is.matrix(data)) { data <- as.matrix(data)}
 
@@ -262,31 +264,68 @@ fit_spat_scalegev <- function(data, temp.cov, hom = FALSE, method = "BFGS",
 
   else {
 
-    ml.est <- array(dim = c(4,d))
+    if(varmeth == "basic") {
 
-    Yfish <- array( dim = c(4*d, n.dat))
-    for (m in 1:d) {
+      ml.est <- array(dim = c(4,d))
 
-      estim <- fit_scalegev(data[, m], temp.cov = temp.cov, method = method,
-                                maxiter = maxiter, hessian = TRUE)
-      ml.est[, m] <- estim$mle
-      score.m <- t(grad_ll_scalegev(data[, m], params = ml.est[,m],  temp.cov = temp.cov))
-      #
-      #       fishest <- cov(score.m, use = "pairwise.complete.obs")
-      #       fishestinv <- solve(fishest)
-      fishest <- estim$hessian
-      fishestinv <- solve(fishest)  #, error = array(dim = c(4,4)))
-      Yfish[(4 * m - 3):(4 * m), ] <- fishestinv %*% t(score.m)
+      Yfish <- array( dim = c(4*d, n.dat))
+      for (m in 1:d) {
+
+        estim <- fit_scalegev(data[, m], temp.cov = temp.cov, method = method,
+                                  maxiter = maxiter, hessian = TRUE)
+        ml.est[, m] <- estim$mle
+        score.m <- t(grad_ll_scalegev(data[, m], params = ml.est[,m],  temp.cov = temp.cov))
+        #
+        #       fishest <- cov(score.m, use = "pairwise.complete.obs")
+        #       fishestinv <- solve(fishest)
+        fishest <- estim$hessian
+        fishestinv <- solve(fishest)  #, error = array(dim = c(4,4)))
+        Yfish[(4 * m - 3):(4 * m), ] <- fishestinv %*% t(score.m)
+      }
+
+      cov.mat <- stats::var(t(Yfish), use = "pairwise.complete.obs")/n.dat
+
+      rownames(ml.est) <- c("mu", "sigma", "gamma", "alpha")
+      rownames(cov.mat) <- colnames(cov.mat) <- paste0(c("mu", "sigma", "gamma", "alpha"), rep(1:d, each = 4))
+
+     return(list(mle = ml.est, cov.mat = cov.mat))
     }
+    if(varmeth == "chain") {
+      # store parameter estimates
+      ml.est <- array(dim = c(4,d))
+      # store hessian of optimisation
+      Jinvs <- list()
 
-    cov.mat <- stats::var(t(Yfish), use = "pairwise.complete.obs")
+      for (m in 1:d) {
 
-    rownames(ml.est) <- c("mu", "sigma", "gamma", "aplha")
+        estim <- fit_scalegev(data[, m], temp.cov = temp.cov, method = method,
+                              maxiter = maxiter, hessian = TRUE)
 
+        Jinvs[[m]] <- solve(estim$hessian)
 
+        ml.est[, m] <- estim$mle
 
+      }
 
-    return(list(mle = ml.est, cov.mat = cov.mat))
+      Gammas <- estimate_gammas(data = data, parmat = ml.est, temp.cov = temp.cov, rel_par = FALSE)
+      Sigma <- array(dim = c(4*d, 4*d))
+      for (j in 1:d) {
+        for (k in j:d) {
+          Sigma[((j-1)*4 +1) : (j*4), ((k-1)*4 +1) : (k*4)] <- compute_sigmajk(par.j = ml.est[, j], par.k = ml.est[, k],
+                                     Gammajk = Gammas[((j-1)*3 +1) : (j*3), ((k-1)*3 +1):(k*3)],
+                                     temp.cov = temp.cov, Jinv.j = Jinvs[[j]], Jinv.k = Jinvs[[k]])
+          Sigma[((k-1)*4 +1) : (k*4), ((j-1)*4 +1) : (j*4)] <- t(Sigma[((j-1)*4 +1) : (j*4), ((k-1)*4 +1) : (k*4)] )
+        }
+      }
+
+      rownames(ml.est) <- c("mu", "sigma", "gamma", "alpha")
+
+      Sigma <- Sigma/n.dat
+
+      rownames(Sigma) <- colnames(Sigma) <- paste0(c("mu", "sigma", "gamma", "alpha"), rep(1:d, each = 4))
+
+      return(list(mle = ml.est, cov.mat = Sigma))
+    }
   }
 }
 

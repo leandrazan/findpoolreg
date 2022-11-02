@@ -96,9 +96,10 @@ grad_h <- function(par.mat, equal_distr = TRUE) {
 #'
 #' @param theta Matrix containing estimated parameter values. Each column corresponds to one region.
 #' @param covmat Estimated variance-covariance matrix of the estimated parameters.
-#' @param n Record length.
-#' @param equal_distr Logical; if `TRUE` (the default) the hypothesis is the one of equal distributions across
-#' the different stations. If `FALSE`, the hypothesis is that the local scaling model holds across the region.
+#' @param n Record length, only needs to be provided if covariance matrix is not scaled by n already.
+#' @param H0 Either 'ED' for 'Equal distribution, i.e. the hypothesis is the one of equal distributions across
+#' the different stations, or 'LS' for 'Local Scaling', i.e. the hypothesis is that the local scaling model holds across the region.
+#' @param covmat_scaled Logical; whether covariance matrix is scaled by record length.
 #'
 #' @return The numeric value of the test statistic.
 #' @export
@@ -111,19 +112,23 @@ grad_h <- function(par.mat, equal_distr = TRUE) {
 #' mlest <- fit_spat_scalegev(data = xx, temp.cov = (1:100)/100, hom = FALSE)
 #'
 #' # compute test statistic
-#' teststat(mlest$mle, covmat = mlest$cov.mat, n = 100, equal_distr = TRUE)
+#' teststat(mlest$mle, covmat = mlest$cov.mat, n = 100, H0 = "ED")
 
-teststat <- function(theta, covmat, n, equal_distr = TRUE) {
+teststat <- function(theta, covmat, H0 = "ED", covmat_scaled = TRUE, n = NULL) {
   if(anyNA(theta)) {return(NA)}
-  else {
-    hth <- htheta(theta, equal_distr = equal_distr)
-    grh <- grad_h(theta,  equal_distr = equal_distr)
 
-    tn <- tryCatch(n*as.numeric(hth %*%  solve(grh %*% covmat %*% t(grh)) %*% hth),
-             error = function(egal) {NA})
-    if(is.na(tn)) { warning(" Covariance matrix of h(theta) is singular.")}
-    tn
-  }
+  if(!covmat_scaled & is.null(n)) { stop("Please provide the record length.")}
+
+  equal_distr <- ifelse(H0 == "ED", TRUE, FALSE)
+
+  hth <- htheta(theta, equal_distr = equal_distr)
+  grh <- grad_h(theta,  equal_distr = equal_distr)
+
+  scale.factor <- ifelse(covmat_scaled, 1, n)
+  tn <- tryCatch(scale.factor*as.numeric(hth %*%  solve(grh %*% covmat %*% t(grh)) %*% hth),
+           error = function(egal) {NA})
+  if(is.na(tn)) { warning(" Covariance matrix of h(theta) is singular.")}
+  tn
 
 }
 
@@ -131,8 +136,11 @@ teststat <- function(theta, covmat, n, equal_distr = TRUE) {
 #' Compute a data frame containing the value of the test statistic and p-value from the data
 #' @param data Matrix or data frame of observations. Each column corresponds to one station/region.
 #' @param temp.cov Temporal covariate with same record length as data.
-#' @param equal_distr Logical; if `TRUE` (the default) the hypothesis is the one of equal distributions across
-#' the different stations. If `FALSE`, the hypothesis is that the local scaling model holds across the region.
+#' @param H0 Either 'ED' for 'Equal distribution, i.e. the hypothesis is the one of equal distributions across
+#' the different stations, or 'LS' for 'Local Scaling', i.e. the hypothesis is that the local scaling model holds across the region.
+#' @param varmeth Method for estimation of variance-covariance matrix. Can be either `chain` (the default) for an estimator based
+#' on the multivariate chain rule, or `basic` for a very simplistic but faster method. Passed to
+#' \link[findpoolreg]{fit_spat_scalegev}.
 #'
 #' @return A data frame with columns
 #' * teststat: observed value of the test statistic
@@ -142,16 +150,19 @@ teststat <- function(theta, covmat, n, equal_distr = TRUE) {
 #' @examples
 #'  # generate 3 dimensional data:
 #' xx <- matrix(rep(exp((1:100)/100), 3)*evd::rgev(300), ncol = 3)
-#' compute_teststat(data = xx, temp.cov = (1:100)/100, equal_distr = TRUE)
-compute_teststat <- function(data, temp.cov, equal_distr = TRUE) {
+#' compute_teststat(data = xx, temp.cov = (1:100)/100, H0 = "ED")
+compute_teststat <- function(data, temp.cov, H0 = "ED", varmeth = "chain") {
 
   d <- ncol(data)
+  equal_distr <- ifelse(H0 == "ED", TRUE, FALSE)
+
   if(is.null(d)) {stop("Data must have dimension at least 2.")}
-  mlest <- tryCatch(fit_spat_scalegev(data, temp.cov, hom = FALSE),
+  mlest <- tryCatch(fit_spat_scalegev(data, temp.cov, hom = FALSE, varmeth = varmeth),
                     error = function(egal) list(mle = NA, cov.mat = NA))
 
   val <- teststat(theta = mlest$mle, covmat = mlest$cov.mat, n = nrow(data),
-                  equal_distr = equal_distr)
+                  H0 = H0, covmat_scaled = TRUE)
+
   dftest <- ifelse(equal_distr, 4*(d-1), 3*(d-1))
   data.frame(teststat = val, p = stats::pchisq(val, df = dftest,
                                                 lower.tail = FALSE))
