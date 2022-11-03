@@ -18,7 +18,7 @@ or relative values \eqn{\mu, \mu/\sigma, \gamma, \alpha/\mu}.}
 }
 \value{
 A matrix of dimension \eqn{3\times} \code{length(x)} containing the values of
-\deqn{ \dot\ell_{(0,1, \gamma)} \left( \frac{ x - \mu(gmst(t))}{\sigma(gmst(t))} \right).}
+\deqn{ \dot\ell_{(0,1, \gamma)} ( \frac{ x - \mu(gmst(t))}{\sigma(gmst(t))} ).}
 }
 \description{
 Computes three dimensional score function of data with margins transformed to standard GEV

@@ -53,8 +53,8 @@ generate_bootsamp_unitfrech <- function(data, temp.cov, locations,
   for( ms.mod in ms_models) {
     fit.tmp <-  tryCatch(
       SpatialExtremes::fitmaxstab(unitfrech, coord = locations, ms.mod, warn = warn_msfit),
-        error = function(a) NA)
-    fitted_ms <- if(!is.na(fit.tmp)) {
+        error = function(a) {list(fitted.values  =  NA)} )
+    fitted_ms <- if(!anyNA(fit.tmp$fitted.values)) {
       append(fitted_ms, list(fit.tmp))
       }
   }
@@ -286,7 +286,7 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 #' Columns should be named or numbered to identify subsets.
 #' @param subsets A list containing subsets of columns on which to perform the bootstrap test.
 #' @param return_boots Logical; whether to return bootstrapped values of test statistic and p-value.
-#' @param adj_pvals Logical; whether to return column containing Holmes-adjusted p-values.
+#' @param adj_pvals Logical; whether to return column containing Holm-adjusted p-values.
 #' @inheritParams bootstrap_scalegev
 #'
 #' @return A tibble with the following columns:
@@ -300,7 +300,7 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 #' * `par_h0` The parameter estimates under H0.
 #' * `H0` Character code of the null hypothesis.
 #' * `sbst` The subset on which the hypothesis was tested.
-#' * `adj_p` (if `adj_pvals = TRUE`) The Holmes-adjuted p-values.
+#' * `adj_p` (if `adj_pvals = TRUE`) The Holm-adjusted p-values.
 #' @export
 #'
 #' @examples
@@ -460,7 +460,7 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
 
 
 
-#' Holms-correction of p-values for multiple testing
+#' Holm-correction of p-values for multiple testing
 #'
 #' @param pvals  Vector of p-values
 #'
@@ -490,3 +490,32 @@ adjust_pvals <- function(pvals) {
 }
 
 
+#' Adjust test level for multiple testing
+#'
+#' @param level The test level (numeric value between 0 and 1)
+#' @param nhyp Number of hypotheses that are tested
+#' @param type Either 'Holm' for the Holm-procedure or 'BenjYek' for the Benjamini Yekutieli procedure.
+#'
+#' @return A vector containing the adjusted critical values in ascending order.
+#'
+#' @export
+#'
+#' @examples
+#' adjust_level(0.1, 9, type = "Holm")
+#' adjust_level(0.1, 9, type = "BenjYek")
+adjust_levels <- function(level, nhyp, type = "Holm") {
+  if(level <= 0 | level >= 1) {stop("level must be in the interval (0,1).")}
+
+  if(!(type %in% c("Holm", "BenjYek"))) { stop("Type must be either 'Holm' or 'BenjYek'.") }
+
+  if(type == "BenjYek") {
+   denom <- nhyp*sum(1/(1:nhyp))
+   adjlevs <- level*(1:nhyp)/denom
+  }
+  if(type == "Holm") {
+   adjlevs <- level/(nhyp:1)
+  }
+
+  adjlevs
+
+}

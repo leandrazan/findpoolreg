@@ -2,18 +2,19 @@
 % Please edit documentation in R/bootstrap_fun.R
 \name{adjust_pvals}
 \alias{adjust_pvals}
-\title{Holms-correction of p-values for multiple testing}
+\title{Holm-correction of p-values for multiple testing}
 \usage{
-adjust_pvals(pvaltib, nhyp)
+adjust_pvals(pvals)
 }
 \arguments{
-\item{pvaltib}{Tibble}
-
-\item{nhyp}{}
+\item{pvals}{Vector of p-values}
 }
 \value{
-
+Vector of adjusted p-values
 }
 \description{
-Holms-correction of p-values for multiple testing
+Holm-correction of p-values for multiple testing
+}
+\examples{
+adjust_pvals( c(0.001, 0.0002, 0.3, 0.55) )
 }

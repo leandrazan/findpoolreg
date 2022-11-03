@@ -9,7 +9,7 @@
 #' or relative values \eqn{\mu, \mu/\sigma, \gamma, \alpha/\mu}.
 #'
 #' @return A matrix of dimension \eqn{3\times} `length(x)` containing the values of
-#' \deqn{ \dot\ell_{(0,1, \gamma)} \left( \frac{ x - \mu(gmst(t))}{\sigma(gmst(t))} \right).}
+#' \deqn{ \dot\ell_{(0,1, \gamma)} ( \frac{ x - \mu(gmst(t))}{\sigma(gmst(t))} ).}
 #' @export
 #'
 #' @examples
