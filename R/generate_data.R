@@ -63,6 +63,7 @@ generateData <- function(n = 100, d = 9,
 
 
 
-  Xgev
+  colnames(Xgev) <- 1:d
 
+  Xgev
 }

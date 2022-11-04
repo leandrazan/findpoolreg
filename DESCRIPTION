@@ -22,4 +22,5 @@ Imports:
     evd,
     purrr,
     tidyr,
-    dplyr
+    dplyr,
+    magrittr
