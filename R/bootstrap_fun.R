@@ -501,8 +501,8 @@ adjust_pvals <- function(pvals) {
 #' @export
 #'
 #' @examples
-#' adjust_level(0.1, 9, type = "Holm")
-#' adjust_level(0.1, 9, type = "BenjYek")
+#' adjust_levels(0.1, 9, type = "Holm")
+#' adjust_levels(0.1, 9, type = "BenjYek")
 adjust_levels <- function(level, nhyp, type = "Holm") {
   if(level <= 0 | level >= 1) {stop("level must be in the interval (0,1).")}
 
