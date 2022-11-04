@@ -3,25 +3,26 @@
 #' @param coord_grid A dataframe containing the grid coordinates in the columns `from_lon,to_lon, from_lat, to_lat`.
 #' Can also contain the grid centers through columns `meanlon`, `meanlat`.
 #' @param testres Result of bootstrap test as obtained from  \code{\link[findpoolreg]{bootstrap_scalegev_subsets}}.
-#' @param rejection_proc The rejection procedure: either `Holm` for the Holm stepdown procedure, or `BenjYek` for the
+#' @param rej_proc The rejection procedure: either `Holm` for the Holm stepdown procedure, or `BenjYek` for the
 #' Benjamini Yekutieli stepup procedure. Only relevant when `plot_type = rejection`.
 #' @param plot_type The plot type: either `rejection`, then regions are shaded according to test result,
 #'  i.e. rejection or no rejection or `pvals`, then  regions are shaded according to their p-value.
 #' @param level The test level
 #' @param bins Bins for p-value shades when `plot_type = pvals`.
-#'
+#' @param ... additional arguments passed to \code{\link[leaflet]{leafletOptions}}
 #' @return A leaflet plot.
 #' @export
 #'
 #' @examples
 #'
 #' ## generate data and compute test results
+#' \dontrun{
 #' coord_grid <- tidyr::expand_grid(from_lat = seq(44.75, 48.5, 1.25), from_lon = seq(7.25, 13.25, 2) ) %>%
 #'          dplyr::mutate(to_lon = from_lon + 2, to_lat = from_lat + 1.25, Region = 1:16)
 #'
 #' meancoords <-   as.matrix((coord_grid %>% dplyr::mutate(meanlon = (from_lon + to_lon)/2,
 #'                                                            meanlat = (from_lat + to_lat)/2))[ , 6:7])
-#' cvrt <- slbm::GMST$smoothedGMST[43:142]
+#' cvrt <- (-20:79)/100
 #' simdat <- generateData(n = 100, d = 16, scale = c(rep(6, 3), rep(5, 10), rep(3, 3)),
 #'                        loc =  c(rep(24, 3), rep(20, 7), rep(17, 6)), shape =  c(rep(0.1, 13), rep(0.15, 3)),
 #'                        alpha =  c(rep(3, 3), rep(2.5, 7),  rep(2, 6)),
@@ -30,19 +31,23 @@
 #' subsets <- purrr::map(c(1:9, 11:16), ~ c(10, .x))
 #' bootres <- bootstrap_scalegev_subsets(data = simdat, temp.cov = cvrt, locations = meancoords, subsets = subsets)
 #'
-#' plot_regions(coord_grid = coord_grid, testres = bootres, rej_proc = "Holm")
+#' plot_regions(coord_grid = coord_grid, testres = bootres, rej_proc = "Holm", zoom)
 #' plot_regions(coord_grid = coord_grid, testres = bootres, rej_proc = "BenjYek")
 #'
 #' plot_regions(coord_grid = coord_grid, testres = bootres, plot_type = "pvals")
-#'
+#'}
 plot_regions <- function(coord_grid, testres, rej_proc = "Holm", plot_type = "rejection", level = 0.1,
-                         bins =  c(0,0.005, 0.01, 0.02, 0.05, 1)) {
+                         bins =  c(0,0.005, 0.01, 0.02, 0.05, 1), ...) {
 
+  add.args <- list(...)
   if(!("meanlon" %in% colnames(coord_grid))) {
    coord_grid <- coord_grid %>% dplyr::mutate(meanlon = (from_lon + to_lon)/2,
      meanlat = (from_lat + to_lat)/2)
   }
-  testres  <- testres %>% tidyr::unnest(cols = sbst)
+
+  if( "sbst" %in% colnames(testres)) {
+    testres  <- testres %>% tidyr::unnest(cols = sbst)
+  }
   testres <- testres %>% dplyr::rename("Region" = "X2")
 
 
@@ -55,7 +60,7 @@ plot_regions <- function(coord_grid, testres, rej_proc = "Holm", plot_type = "re
 
    bb <- coord_grid %>% dplyr::left_join(testres, by = "Region")
 
-   plotgrid <- leaflet::leaflet(data = bb) %>%
+   plotgrid <- leaflet::leaflet(data = bb, options = leaflet::leafletOptions( ... )) %>%
       leaflet::addTiles() %>%
       leaflet::addRectangles(lng1 = ~from_lon, lng2 = ~to_lon, lat1 = ~from_lat, lat2 = ~to_lat,
                     fill = ~reject, fillOpacity = 0.6) %>%
