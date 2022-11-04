@@ -29,9 +29,7 @@ scalegev2frech <- function(data, temp.cov, par = NULL) {
 
   loc <- par[1]*exp(par[4]*temp.cov/par[1])
   scale <- par[2]*exp(par[4]*temp.cov/par[1])
-  unitfrech <- SpatialExtremes::gev2frech(data,
-                                          loc = loc,
-                                          scale = scale,
+  unitfrech <- gev2frech(data, loc = loc, scale = scale,
                                           shape = par[3])
   unitfrech
 }

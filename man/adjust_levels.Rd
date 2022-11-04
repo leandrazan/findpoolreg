@@ -20,6 +20,6 @@ A vector containing the adjusted critical values in ascending order.
 Adjust test level for multiple testing
 }
 \examples{
-adjust_level(0.1, 9, type = "Holm")
-adjust_level(0.1, 9, type = "BenjYek")
+adjust_levels(0.1, 9, type = "Holm")
+adjust_levels(0.1, 9, type = "BenjYek")
 }
