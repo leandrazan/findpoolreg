@@ -73,7 +73,7 @@ generate_bootsamp_unitfrech_bivdens <- function(data, temp.cov, locations,
 
 bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
                                         biv_models = c( "log", "alog", "hr"),
-                                        varmeth = "chain", return_boots = FALSE){
+                                        varmeth = "chain", return_boots = FALSE, set_start_vals = TRUE){
 
   if(!(H0 %in% c("ED", "LS", "both"))) {
     stop("H0 must be one of 'ED', 'LS' or 'both'.")
@@ -154,9 +154,15 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
       .x
     })
 
+    if(set_start_vals) {
+      start_vals_ed <- matrix( rep(pars_h0_ed, 2), ncol = 2)
+    }
+    else {
+      start_vals_ed <- NULL
+    }
     # Calculate test statistics for generated bootstrap data
     results_sim_ed <- purrr::map_dfr(X_star_ed,  ~ compute_teststat(.x, temp.cov = temp.cov,
-                                                                    H0 = "ED", varmeth = varmeth))
+                                                                    H0 = "ED", varmeth = varmeth, start_vals = start_vals_ed))
 
     results_ed <- compute_teststat(data = data, temp.cov = temp.cov, H0 = "ED", varmeth = varmeth)
 
@@ -193,8 +199,9 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
 #' @param B The number of bootstrap replicates.
 #' @param H0 Character code for the null-hypothesis: `ED` for the one of equal distribution;
 #' `LS` for the one of a local scaling model.
-#' @param biv_models A vector containing the names of the max-stable models to fit. Must be a subset of
-#' `gauss, brown, powexp, cauchy, whitmat, bessel`.
+#' @param biv_models A vector containing the names of the bivariate extreme value distribution models to fit.
+#'  Must be a subset of
+#' \code{c( "log", "alog", "hr", "neglog", "aneglog", "bilog", "negbilog", "ct","amix")}.
 #' @param varmeth Method for estimating the variance-covariance matrix of the stationwise ML estimators, passed to
 #' \code{\link[findpoolreg]{fit_spat_scalegev}}.
 #'  Can be either `chain` (the default) for an estimator based
@@ -229,7 +236,7 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
 bootstrap_pairs_bivmod <- function(data, temp.cov, B = 300, H0 = "ED",
                                     biv_models = c( "log", "alog", "hr"),
                                     varmeth = "chain", reg_of_int = NULL, pairs = NULL,
-                                    return_boots = FALSE) {
+                                    return_boots = FALSE, set_start_vals = TRUE) {
 
   if(is.null(pairs)) {
     if(is.null(reg_of_int)) {
@@ -250,7 +257,7 @@ bootstrap_pairs_bivmod <- function(data, temp.cov, B = 300, H0 = "ED",
     data.tmp <- data[, pair.tmp]
 
     boot.tmp <- bootstrap_onepair_bivmod(data = data.tmp, temp.cov = temp.cov, B = B, H0 = H0,
-                                          biv_models = biv_models, return_boots = return_boots)
+                                          biv_models = biv_models, return_boots = return_boots, set_start_vals = set_start_vals)
 
     bootres <- bootres %>%
       dplyr::bind_rows(boot.tmp %>%

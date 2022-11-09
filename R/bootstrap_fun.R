@@ -200,8 +200,7 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
         loc <- pars_h0_hom[1,i]*expo
         scale <- pars_h0_hom[2,i]*expo
 
-        .x[,i] <-
-          SpatialExtremes::frech2gev(.x[,i], loc = loc,
+        .x[,i] <- frech2gev(.x[,i], loc = loc,
                                      scale = scale,
                                      shape = pars_h0_hom[3,i])
       }
@@ -239,8 +238,7 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
         loc <- pars_h0_ed[1,i]*expo
         scale <- pars_h0_ed[2,i]*expo
 
-        .x[,i] <-
-          SpatialExtremes::frech2gev(.x[,i], loc = loc,
+        .x[,i] <- frech2gev(.x[,i], loc = loc,
                                      scale = scale,
                                      shape = pars_h0_ed[3,i])
       }
@@ -287,6 +285,8 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 #' @param subsets A list containing subsets of columns on which to perform the bootstrap test.
 #' @param return_boots Logical; whether to return bootstrapped values of test statistic and p-value.
 #' @param adj_pvals Logical; whether to return column containing Holm-adjusted p-values.
+#' @param set_start_vals Logical; whether to set the start values for the optimisation carried out on the bootstrap
+#' to the estimates obtained under H0 on input data
 #' @inheritParams bootstrap_scalegev
 #'
 #' @return A tibble with the following columns:
@@ -312,7 +312,6 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 #' x <- generateData(seed = 2, n = 100, temp.cov = cvrt, d= 6, locations = coords,
 #' loc = c(rep(10,4), c(8, 8)), scale = c(rep(2,4), c(1.5, 1.5)), shape = rep(0.1, 6), alpha = rep(2,6))
 #'
-#' colnames(x) <- 1:6
 #' sbsts <- list( c(1,2), c(1,3), c(1,4), c(1,5), c(1,6))
 #' bootres <- bootstrap_scalegev_subsets(data = x, temp.cov = cvrt, locations = coords, varmeth = "chain", B = 200, subsets = sbsts,
 #' adj_pvals = TRUE)
@@ -320,7 +319,8 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 #' }
 bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
                                 ms_models = c("powexp", "gauss", "brown"),
-                                sel_crit = "TIC", varmeth = "chain", subsets, return_boots = FALSE, adj_pvals = FALSE){
+                                sel_crit = "TIC", varmeth = "chain", subsets, return_boots = FALSE,
+                                adj_pvals = FALSE, set_start_vals = TRUE){
 
   if(!(H0 %in% c("ED", "LS", "both"))) {
     stop("H0 must be one of 'ED', 'LS' or 'both'.")
@@ -348,7 +348,7 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
 
 
     j.cols <-  subsets[[j]]
-
+    n.jcols <- length(j.cols)
     # observations belonging to current subset
     data.j <- data[, colnames(data) %in% j.cols]
 
@@ -368,10 +368,9 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
     X_star_ed <- purrr::map(X_star_ed, ~ {
 
       ## transform margins to GEV-distributions with estimated parameters satisfying H0
-      for (i in  1:length(j.cols)){
+      for (i in  1:n.jcols){
 
-        .x[, i] <-
-          SpatialExtremes::frech2gev(.x[, i], loc = loc,
+        .x[, i] <- frech2gev(.x[, i], loc = loc,
                                      scale = scale,
                                      shape = pars_h0_ed[3])
       }
@@ -380,34 +379,16 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
       .x
     })
 
-    # ## estimate parameters of GEV margins under homogeneity assumption
-    # pars_h0_hom <-  fit_spat_expsc(data = data.j, temp.cov = temp.cov, hom = TRUE)$mle
-    # pars_h0_hom[2, ] <- pars_h0_hom[1, ]/pars_h0_hom[2, ]   ## to obtain values for sigma
-    # pars_h0_hom[4, ] <- pars_h0_hom[4, ]*pars_h0_hom[1, ]   ## to obtain values for alpha
-    # rownames(pars_h0_hom) <- c("mu0", "sigma0", "gamma0", "alpha0")
-
-
-    # X_star_if <- purrr::map(X_star, ~ {
-    #
-    #   ## transform margins to GEV-distributions with estimated parameters satisfying H0
-    #   for (i in 1:length(j.cols)){
-    #     loc <- pars_h0_hom[1,i]*exp(pars_h0_hom[4,i]/pars_h0_hom[1,i]*temp.cov)
-    #     scale <- pars_h0_hom[2,i]*exp(pars_h0_hom[4,i]/pars_h0_hom[1,i]*temp.cov)
-    #
-    #     .x[, (colnames(data) == j.cols[i])] <-
-    #       SpatialExtremes::frech2gev(.x[,(colnames(data) == j.cols[i])], loc = loc,
-    #                                  scale = scale,
-    #                                  shape = pars_h0_hom[3,i])
-    #   }
-    #
-    #   #  x_star[NAMatrix] <- NA
-    #   .x[, (colnames(data) %in% j.cols)]
-    # })
-
-
+    if(set_start_vals) {
+      start_vals_ed <- matrix( rep(pars_h0_ed, n.jcols), ncol = n.jcols)
+    }
+    else {
+      start_vals_ed <- NULL
+    }
     # Calculate test statistics for generated bootstrap data
     results_sim_ed <- purrr::map_dfr(X_star_ed,  ~ compute_teststat(.x, temp.cov = temp.cov,
-                                                                   H0 = "ED", varmeth = varmeth))
+                                                                    H0 = "ED", varmeth = varmeth, start_vals = start_vals_ed))
+
 
     # results_sim_if <- purrr::map_dfr(X_star_if,  ~ compute_teststat(.x, temp.cov = temp.cov,
     #                                                                 equal_distr = FALSE))
@@ -427,12 +408,7 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
           dplyr::mutate(p_boot = p_corr_ed, bootstrap.B = B, Model_Sel = covmod,
                  ms_pars = parhat_ms, boot_teststat = list(results_sim_ed),
                  par_h0 = list(pars_h0_ed), H0 = "ED", sbst  = list(data.frame(t(subsets[[j]])))))
-        # %>%
-        #   bind_rows(as_tibble(results_if )  %>%
-        #               mutate(p_corr = p_corr_if, bootstrap.B = B, Model_Sel = Kovmod,
-        #                      ms_pars = list(parhat),
-        #                      boot_teststat = list(results_sim_if),
-        #                      par_h0 = list(pars_h0_hom), H0 = "IF"))  %>% mutate( sbst  = list(data.frame(t(subsets[[j]])))))
+
     }
     else {
       res <- res %>% dplyr::bind_rows(
@@ -440,11 +416,7 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
           dplyr::mutate(p_boot = p_corr_ed, bootstrap.B = B, Model_Sel = covmod,
                  ms_pars = parhat_ms,
                  par_h0 = list(pars_h0_ed), H0 ="ED", sbst  = list(data.frame(t(subsets[[j]])))))
-      # %>%
-      #     bind_rows(as_tibble(results_if )  %>%
-      #                 mutate(p_corr = p_corr_if, bootstrap.B = B, Model_Sel = Kovmod,
-      #                        ms_pars = list(parhat),
-      #                        par_h0 = list(pars_h0_hom), H0 = "IF"))  %>% mutate(sbst  = list(data.frame(t(subsets[[j]])))))
+
     }
   }
 

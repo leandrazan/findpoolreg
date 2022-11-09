@@ -62,6 +62,7 @@ nll_scalegev <- function(params, data, temp.cov){
 #' @param maxiter Maximum number of iterations during maximisation (also passed to [stats::optim()]).
 #' @param hessian logical; whether to return the numerically differentiated Hessian matrix.
 #' @param printStartVals logical; whether to print start values of optimisation.
+#' @param start_val Optional: vector containing start values for the ML optimisation.
 #'
 #' @return A list containing the components
 #' * mle: Estimated parameter values
@@ -78,8 +79,8 @@ nll_scalegev <- function(params, data, temp.cov){
 #' # generate 3 dimensional data:
 #' xx <- matrix(rep(exp((1:100)/100), 3)*evd::rgev(300), ncol = 3)
 #' fit_scalegev(data = xx, temp.cov = (1:100)/100, printStartVals = TRUE)
-fit_scalegev <- function(data, temp.cov, method = "BFGS", maxiter = 200,
-                         hessian = TRUE, printStartVals = FALSE) {
+fit_scalegev <- function(data, temp.cov, method = "BFGS", maxiter = 300,
+                         hessian = TRUE, printStartVals = FALSE, start_val = NULL) {
 
   d.dat <- ncol(data)
   if(is.null(d.dat)) { d.dat <- 1}
@@ -91,14 +92,16 @@ fit_scalegev <- function(data, temp.cov, method = "BFGS", maxiter = 200,
     data <- as.vector(data)
   }
 
-  # compute start values from stationary model
-  start_st <-  evd::fgev(as.vector(data), std.err = FALSE)$estimate
-  start_vals <- c(start_st[1], start_st[2], start_st[3], 0)
-  names(start_vals) <- c("mu", "sigma", "gamma", "alpha")
-  if(printStartVals) {print(start_vals)}
+  if(is.null(start_val)) {
+    # compute start values from stationary model
+    start_st <-  evd::fgev(as.vector(data), std.err = FALSE)$estimate
+    start_val <- c(start_st[1], start_st[2], start_st[3], 0)
+    names(start_val) <- c("mu", "sigma", "gamma", "alpha")
+  }
+  if(printStartVals) {print(start_val)}
 
   # optimise log-likelihood
-  mlest <- stats::optim(start_vals, fn = nll_scalegev,
+  mlest <- stats::optim(start_val, fn = nll_scalegev,
                  data = data, temp.cov = temp.cov,
                  method = method, control = list(maxit = maxiter),
                  hessian = hessian)
@@ -205,6 +208,7 @@ nll_scalegev_hom <- function(params, data, temp.cov){
 #' when FALSE, the plain parameters are returned.
 #' @param varmeth Method for estimation of variance-covariance matrix. Can be either `chain` (the default) for an estimator based
 #' on the multivariate chain rule, or `basic` for a very simplistic but faster method.
+#' @param start_vals Optional: matrix containing start values for the ML optimisation.
 #'
 #' @return A list containing the estimated parameter values in `mle` and
 #' * if `hom = TRUE`:  the value of the negative log-likelihood and a convergence code
@@ -227,7 +231,7 @@ nll_scalegev_hom <- function(params, data, temp.cov){
 #' fit_spat_scalegev(data = xx, temp.cov = (1:100)/100, hom = TRUE, returnRatios = FALSE)$mle
 #'
 fit_spat_scalegev <- function(data, temp.cov, hom = FALSE, method = "BFGS",
-                           maxiter = 200, returnRatios = TRUE, varmeth = "chain") {
+                           maxiter = 300, returnRatios = TRUE, varmeth = "chain", start_vals = NULL) {
 
   if(!is.matrix(data)) { data <- as.matrix(data)}
 
@@ -299,7 +303,7 @@ fit_spat_scalegev <- function(data, temp.cov, hom = FALSE, method = "BFGS",
       for (m in 1:d) {
 
         estim <- fit_scalegev(data[, m], temp.cov = temp.cov, method = method,
-                              maxiter = maxiter, hessian = TRUE)
+                              maxiter = maxiter, hessian = TRUE, start_val = start_vals[ , m])
 
         Jinvs[[m]] <- solve(estim$hessian)
 

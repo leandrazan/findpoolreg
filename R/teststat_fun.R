@@ -141,6 +141,7 @@ teststat <- function(theta, covmat, H0 = "ED", covmat_scaled = TRUE, n = NULL) {
 #' @param varmeth Method for estimation of variance-covariance matrix. Can be either `chain` (the default) for an estimator based
 #' on the multivariate chain rule, or `basic` for a very simplistic but faster method. Passed to
 #' \link[findpoolreg]{fit_spat_scalegev}.
+#' @param start_vals Optional: matrix containing start values for the ML optimisation.
 #'
 #' @return A data frame with columns
 #' * teststat: observed value of the test statistic
@@ -151,13 +152,12 @@ teststat <- function(theta, covmat, H0 = "ED", covmat_scaled = TRUE, n = NULL) {
 #'  # generate 3 dimensional data:
 #' xx <- matrix(rep(exp((1:100)/100), 3)*evd::rgev(300), ncol = 3)
 #' compute_teststat(data = xx, temp.cov = (1:100)/100, H0 = "ED")
-compute_teststat <- function(data, temp.cov, H0 = "ED", varmeth = "chain") {
-
+compute_teststat <- function(data, temp.cov, H0 = "ED", varmeth = "chain", start_vals = NULL) {
   d <- ncol(data)
   equal_distr <- ifelse(H0 == "ED", TRUE, FALSE)
 
   if(is.null(d)) {stop("Data must have dimension at least 2.")}
-  mlest <- tryCatch(fit_spat_scalegev(data, temp.cov, hom = FALSE, varmeth = varmeth),
+  mlest <- tryCatch(fit_spat_scalegev(data, temp.cov, hom = FALSE, varmeth = varmeth, start_vals = start_vals),
                     error = function(egal) list(mle = NA, cov.mat = NA))
 
   val <- teststat(theta = mlest$mle, covmat = mlest$cov.mat, n = nrow(data),
