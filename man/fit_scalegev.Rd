@@ -8,9 +8,10 @@ fit_scalegev(
   data,
   temp.cov,
   method = "BFGS",
-  maxiter = 200,
+  maxiter = 300,
   hessian = TRUE,
-  printStartVals = FALSE
+  printStartVals = FALSE,
+  start_val = NULL
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ Must be of same record length as thr observations.}
 \item{hessian}{logical; whether to return the numerically differentiated Hessian matrix.}
 
 \item{printStartVals}{logical; whether to print start values of optimisation.}
+
+\item{start_val}{Optional: vector containing start values for the ML optimisation.}
 }
 \value{
 A list containing the components

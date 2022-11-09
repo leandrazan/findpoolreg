@@ -30,10 +30,10 @@ Estimate covariance of ML estimation applied to two stations
 \examples{
 
 # generate data
-cvrt <- (1:50)/50
-d <- 4
+cvrt <- (1:100)/100
+d <- 16
 coords <- matrix(20*abs(stats::rnorm(d*2)), ncol = 2)
-x <- generateData(seed = 1, n = 50, temp.cov = cvrt, d= d, locations = coords)
+x <- generateData(seed = 1, n = 100, temp.cov = cvrt, d= d, locations = coords)
 
 # compute ML estimate at each station
 mle1 <- fit_scalegev(x[, 1], temp.cov =cvrt)
@@ -43,4 +43,5 @@ mle3 <- fit_scalegev(x[, 3], temp.cov =cvrt)
 # compute covariance between ML estimate of station 1 and ML estimate of station 3
 Gams <-  estimate_gammas(x[, c(1,3)], parmat = cbind(mle1$mle, mle3$mle), temp.cov =cvrt, rel_par = FALSE)
 compute_sigmajk(mle1$mle, mle3$mle, Gams[ 1:3, 4:6], cvrt, solve(mle1$hessian), solve(mle3$hessian))
+
 }

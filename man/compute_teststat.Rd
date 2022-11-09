@@ -4,7 +4,13 @@
 \alias{compute_teststat}
 \title{Compute a data frame containing the value of the test statistic and p-value from the data}
 \usage{
-compute_teststat(data, temp.cov, H0 = "ED", varmeth = "chain")
+compute_teststat(
+  data,
+  temp.cov,
+  H0 = "ED",
+  varmeth = "chain",
+  start_vals = NULL
+)
 }
 \arguments{
 \item{data}{Matrix or data frame of observations. Each column corresponds to one station/region.}
@@ -17,6 +23,8 @@ the different stations, or 'LS' for 'Local Scaling', i.e. the hypothesis is that
 \item{varmeth}{Method for estimation of variance-covariance matrix. Can be either \code{chain} (the default) for an estimator based
 on the multivariate chain rule, or \code{basic} for a very simplistic but faster method. Passed to
 \link[findpoolreg]{fit_spat_scalegev}.}
+
+\item{start_vals}{Optional: matrix containing start values for the ML optimisation.}
 }
 \value{
 A data frame with columns

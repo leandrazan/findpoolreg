@@ -7,14 +7,14 @@
 generateData(
   n = 100,
   d = 9,
-  scale = rep(5, 9),
-  loc = rep(20, 9),
-  shape = rep(0.1, 9),
-  alpha = rep(2.5, 9),
+  scale = rep(5, d),
+  loc = rep(20, d),
+  shape = rep(0.1, d),
+  alpha = rep(2.5, d),
   covmod = "gauss",
-  locations = matrix(20 * abs(stats::rnorm(9 * 2)), ncol = 2),
+  locations = matrix(20 * abs(stats::rnorm(d * 2)), ncol = 2),
   temp.cov = (1:100)/100,
-  MSparam = list(cov11 = 0.28, cov12 = 0.145, cov22 = 0.59, range = 0.55, smooth = 1),
+  MSparam = list(cov11 = 0.4, cov12 = 0.2, cov22 = 0.9, range = 0.55, smooth = 1),
   seed
 )
 }

@@ -15,7 +15,8 @@ bootstrap_scalegev_subsets(
   varmeth = "chain",
   subsets,
   return_boots = FALSE,
-  adj_pvals = FALSE
+  adj_pvals = FALSE,
+  set_start_vals = TRUE
 )
 }
 \arguments{
@@ -48,6 +49,9 @@ on the multivariate chain rule, or \code{basic} for a very simplistic but faster
 \item{return_boots}{Logical; whether to return bootstrapped values of test statistic and p-value.}
 
 \item{adj_pvals}{Logical; whether to return column containing Holm-adjusted p-values.}
+
+\item{set_start_vals}{Logical; whether to set the start values for the optimisation carried out on the bootstrap
+to the estimates obtained under H0 on input data}
 }
 \value{
 A tibble with the following columns:
@@ -77,7 +81,6 @@ coords <- matrix(20*abs(stats::rnorm(6*2)), ncol = 2)
 x <- generateData(seed = 2, n = 100, temp.cov = cvrt, d= 6, locations = coords,
 loc = c(rep(10,4), c(8, 8)), scale = c(rep(2,4), c(1.5, 1.5)), shape = rep(0.1, 6), alpha = rep(2,6))
 
-colnames(x) <- 1:6
 sbsts <- list( c(1,2), c(1,3), c(1,4), c(1,5), c(1,6))
 bootres <- bootstrap_scalegev_subsets(data = x, temp.cov = cvrt, locations = coords, varmeth = "chain", B = 200, subsets = sbsts,
 adj_pvals = TRUE)

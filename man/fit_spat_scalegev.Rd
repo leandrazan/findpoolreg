@@ -9,9 +9,10 @@ fit_spat_scalegev(
   temp.cov,
   hom = FALSE,
   method = "BFGS",
-  maxiter = 200,
+  maxiter = 300,
   returnRatios = TRUE,
-  varmeth = "chain"
+  varmeth = "chain",
+  start_vals = NULL
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ when FALSE, the plain parameters are returned.}
 
 \item{varmeth}{Method for estimation of variance-covariance matrix. Can be either \code{chain} (the default) for an estimator based
 on the multivariate chain rule, or \code{basic} for a very simplistic but faster method.}
+
+\item{start_vals}{Optional: matrix containing start values for the ML optimisation.}
 }
 \value{
 A list containing the estimated parameter values in \code{mle} and

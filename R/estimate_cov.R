@@ -189,10 +189,10 @@ Tsigma_inv <- function(par, temp.cov) {
 #' @examples
 #'
 #' # generate data
-#' cvrt <- (1:50)/50
-#' d <- 4
+#' cvrt <- (1:100)/100
+#' d <- 16
 #' coords <- matrix(20*abs(stats::rnorm(d*2)), ncol = 2)
-#' x <- generateData(seed = 1, n = 50, temp.cov = cvrt, d= d, locations = coords)
+#' x <- generateData(seed = 1, n = 100, temp.cov = cvrt, d= d, locations = coords)
 #'
 #' # compute ML estimate at each station
 #' mle1 <- fit_scalegev(x[, 1], temp.cov =cvrt)
@@ -202,24 +202,94 @@ Tsigma_inv <- function(par, temp.cov) {
 #' # compute covariance between ML estimate of station 1 and ML estimate of station 3
 #' Gams <-  estimate_gammas(x[, c(1,3)], parmat = cbind(mle1$mle, mle3$mle), temp.cov =cvrt, rel_par = FALSE)
 #' compute_sigmajk(mle1$mle, mle3$mle, Gams[ 1:3, 4:6], cvrt, solve(mle1$hessian), solve(mle3$hessian))
-
+#'
 compute_sigmajk <- function(par.j, par.k, Gammajk, temp.cov, Jinv.j , Jinv.k) {
 
-  Bj <- Bmat(par.j, temp.cov = temp.cov)
-  Bk <- Bmat(par.k, temp.cov = temp.cov)
+  s11 <- Gammajk[1, 1]
+  s12 <- Gammajk[1, 2]
+  s13 <- Gammajk[1, 3]
+  s21 <- Gammajk[2,1]
+  s22 <- Gammajk[2,2]
+  s23 <- Gammajk[2,3]
+  s31 <- Gammajk[3,1]
+  s32 <- Gammajk[3,2]
+  s33 <- Gammajk[3,3]
 
-  Tj <- Tsigma_inv(par.j, temp.cov = temp.cov)
-  Tk <- Tsigma_inv(par.k, temp.cov = temp.cov)
+  muj <- par.j[1]
+  sigmaj <- par.j[2]
+  gammaj <- par.j[3]
+  alphaj <- par.j[4]
 
-  BmalT.j <- purrr::map2(Bj, Tj, ~ {.x %*% .y})
+  muk <- par.k[1]
+  sigmak <- par.k[2]
+  gammak <- par.k[3]
+  alphak <- par.k[4]
 
-  BmalT.k <- purrr::map2(Bk, Tk, ~ {.x %*% .y})
+  fj <- (1-alphaj*temp.cov/muj)/sigmaj
+  fk <- (1-alphak*temp.cov/muk)/sigmak
 
-  Summands <- purrr::map2(BmalT.j, BmalT.k, ~ {.x %*% Gammajk %*% t(.y)} )
+  gj <- alphaj*temp.cov/muj^2
+  gk <- alphak*temp.cov/muk^2
 
-  Summands <- Reduce("+", Summands)/length(temp.cov)
+  sig11 <- mean(fk * ( fj * s11 - gj*s12) -
+                  gk*( fj*s12 - alphaj*temp.cov*s22/muj^2), na.rm = TRUE)
+
+  sig12 <-  mean((fj*s12 - gj*s22)/sigmak, na.rm = TRUE)
+
+  sig13 <- mean(fj*s13 - gj*s23, na.rm = TRUE)
+
+  sig14 <- mean( temp.cov*( ( fj*s11 - gj*s12 )/sigmak +  ( fj*s12 - gj*s22)/muk ), na.rm = TRUE)
+
+  sig21 <- mean((s21*fk - s22*gk)/sigmaj, na.rm = TRUE)
+
+  sig22 <- mean(s22/(sigmaj*sigmak), na.rm = TRUE)
+
+  sig23 <- mean( s23/sigmaj, na.rm = TRUE)
+
+  sig24 <- mean(temp.cov*(s21/(sigmaj*sigmak) + s22/(sigmaj*muk)), na.rm = TRUE)
+
+  sig31 <- mean( s31*fk - gk*s32, na.rm = TRUE)
+
+  sig32 <- mean(s32/sigmak, na.rm = TRUE)
+
+  sig33 <- mean( s33, na.rm = TRUE)
+  sig34 <- mean(temp.cov * ( s31/sigmak + s32/muk), na.rm = TRUE)
+
+  sig41 <- mean(temp.cov *( (s11/sigmaj + s21/muj) *fk - gk * (s12/sigmaj + s22/muj) ), na.rm = TRUE)
+
+  sig42 <- mean(temp.cov/sigmak*(s12/sigmaj + s22/muj), na.rm = TRUE)
+
+  sig43 <- mean(temp.cov*(s13/sigmaj + s23/muj), na.rm = TRUE)
+
+  sig44 <- mean(temp.cov^2*( (s11/sigmaj + s21/muj)/sigmak + (s12/sigmaj + s22/muj)/muk), na.rm = TRUE)
+
+  Summands <- matrix( c(sig11, sig12, sig13, sig14,
+                        sig21, sig22, sig23, sig24,
+                        sig31, sig32, sig33, sig34,
+                        sig41, sig42, sig43, sig44),
+                      byrow = TRUE, nrow = 4)
 
   Jinv.j %*%  Summands %*% Jinv.k
 
 }
+
+# compute_sigmajk <- function(par.j, par.k, Gammajk, temp.cov, Jinv.j , Jinv.k) {
+#
+#   Bj <- Bmat(par.j, temp.cov = temp.cov)
+#   Bk <- Bmat(par.k, temp.cov = temp.cov)
+#
+#   Tj <- Tsigma_inv(par.j, temp.cov = temp.cov)
+#   Tk <- Tsigma_inv(par.k, temp.cov = temp.cov)
+#
+#   BmalT.j <- purrr::map2(Bj, Tj, ~ {.x %*% .y})
+#
+#   BmalT.k <- purrr::map2(Bk, Tk, ~ {.x %*% .y})
+#
+#   Summands <- purrr::map2(BmalT.j, BmalT.k, ~ {.x %*% Gammajk %*% t(.y)} )
+#
+#   Summands <- Reduce("+", Summands)/length(temp.cov)
+#
+#   Jinv.j %*%  Summands %*% Jinv.k
+#
+# }
 

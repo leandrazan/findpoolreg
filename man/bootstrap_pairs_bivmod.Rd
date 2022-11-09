@@ -13,7 +13,8 @@ bootstrap_pairs_bivmod(
   varmeth = "chain",
   reg_of_int = NULL,
   pairs = NULL,
-  return_boots = FALSE
+  return_boots = FALSE,
+  set_start_vals = TRUE
 )
 }
 \arguments{
@@ -27,8 +28,9 @@ Columns should be named or numbered to identify subsets.}
 \item{H0}{Character code for the null-hypothesis: \code{ED} for the one of equal distribution;
 \code{LS} for the one of a local scaling model.}
 
-\item{biv_models}{A vector containing the names of the max-stable models to fit. Must be a subset of
-\verb{gauss, brown, powexp, cauchy, whitmat, bessel}.}
+\item{biv_models}{A vector containing the names of the bivariate extreme value distribution models to fit.
+Must be a subset of
+\code{c( "log", "alog", "hr", "neglog", "aneglog", "bilog", "negbilog", "ct","amix")}.}
 
 \item{varmeth}{Method for estimating the variance-covariance matrix of the stationwise ML estimators, passed to
 \code{\link[findpoolreg]{fit_spat_scalegev}}.
