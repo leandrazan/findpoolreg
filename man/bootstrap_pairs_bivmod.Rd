@@ -14,7 +14,7 @@ bootstrap_pairs_bivmod(
   reg_of_int = NULL,
   pairs = NULL,
   return_boots = FALSE,
-  set_start_vals = TRUE
+  set_start_vals = FALSE
 )
 }
 \arguments{

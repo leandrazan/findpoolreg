@@ -236,7 +236,7 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
 bootstrap_pairs_bivmod <- function(data, temp.cov, B = 300, H0 = "ED",
                                     biv_models = c( "log", "alog", "hr"),
                                     varmeth = "chain", reg_of_int = NULL, pairs = NULL,
-                                    return_boots = FALSE, set_start_vals = TRUE) {
+                                    return_boots = FALSE, set_start_vals = FALSE) {
 
   if(is.null(pairs)) {
     if(is.null(reg_of_int)) {

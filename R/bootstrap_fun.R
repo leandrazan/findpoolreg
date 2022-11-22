@@ -175,7 +175,6 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
   d <- ncol(data)
   nobs <- nrow(data)
 
-
   # generate bootstrap samples with unit frechet margins and dependence structure estimated from data
 
   X_star <- generate_bootsamp_unitfrech(data = data, temp.cov = temp.cov, locations = locations,
@@ -284,9 +283,11 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 #' Columns should be named or numbered to identify subsets.
 #' @param subsets A list containing subsets of columns on which to perform the bootstrap test.
 #' @param return_boots Logical; whether to return bootstrapped values of test statistic and p-value.
-#' @param adj_pvals Logical; whether to return column containing Holm-adjusted p-values.
+#' @param adj_pvals Logical; whether to return column containing adjusted p-values.
+#' @param adj_method Method used for adjusting the p-values. Passed to \code{\link[stats]{p.adjust}}.
 #' @param set_start_vals Logical; whether to set the start values for the optimisation carried out on the bootstrap
 #' to the estimates obtained under H0 on input data
+#'
 #' @inheritParams bootstrap_scalegev
 #'
 #' @return A tibble with the following columns:
@@ -320,7 +321,7 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
                                 ms_models = c("powexp", "gauss", "brown"),
                                 sel_crit = "TIC", varmeth = "chain", subsets, return_boots = FALSE,
-                                adj_pvals = FALSE, set_start_vals = TRUE){
+                                adj_pvals = FALSE, adj_method = "BH", set_start_vals = TRUE){
 
   if(!(H0 %in% c("ED", "LS", "both"))) {
     stop("H0 must be one of 'ED', 'LS' or 'both'.")
@@ -329,6 +330,8 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
 
   d <- ncol(data)
   nobs <- nrow(data)
+
+
 
   if(is.null(colnames(data))) { colnames(data) <- 1:d}
 
@@ -345,7 +348,6 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
   # compute bootstrap test statistics  for each subset
 
   for( j in 1:length(subsets)) {
-
 
     j.cols <-  subsets[[j]]
     n.jcols <- length(j.cols)
@@ -421,8 +423,8 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
   }
 
   if(adj_pvals) {
-    adjp <- adjust_pvals(res$p_boot)
-    res <- res %>% dplyr::arrange(p_boot) %>% dplyr::mutate(adj_p = adjp)
+    adjp <- p.adjust(res$p_boot, method = method)
+    res <- res %>% dplyr::mutate(adj_p = adjp)
   }
 
   res
@@ -430,64 +432,55 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
 }
 
 
-
-
-#' Holm-correction of p-values for multiple testing
+#' Compute adjusted p-values
 #'
-#' @param pvals  Vector of p-values
+#' @param tibres A tibble containing a column named `p_boot`, as returned by `bootstrap_scalegev_subsets`.
+#' Can also be a vector of p-values.
+#' @param methods A subset of `holm, BY, BH`, giving the method that is used to adjust the p-values.
+#' @param rejection Logical; whether to add an additional column giving the rejection result at the given level.
+#' @param level Rejection level; only needed when `rejection = TRUE`.
 #'
-#' @return Vector of adjusted p-values
+#' @return The original tibble extended with the adjusted p-values (and rejection results when `rejection = TRUE`).
+#' Columns containing the adjusted p-values are named with `p_holm, p_bh, p_by`.
 #' @export
 #'
 #' @examples
-#' adjust_pvals( c(0.001, 0.0002, 0.3, 0.55) )
-adjust_pvals <- function(pvals) {
+#'
+#' \dontrun{
+#'  # generate 6-dimensional data where two stations deviate from the rest
+#' cvrt <- (1:100)/100
+#' coords <- matrix(20*abs(stats::rnorm(6*2)), ncol = 2)
+#' x <- generateData(seed = 2, n = 100, temp.cov = cvrt, d= 6, locations = coords,
+#' loc = c(rep(10,4), c(8, 8)), scale = c(rep(2,4), c(1.5, 1.5)), shape = rep(0.1, 6), alpha = rep(2,6))
+#'
+#' sbsts <- list( c(1,2), c(1,3), c(1,4), c(1,5), c(1,6))
+#' bootres <- bootstrap_scalegev_subsets(data = x, temp.cov = cvrt, locations = coords, varmeth = "chain", B = 200, subsets = sbsts)
+#' get_adj_pvals(bootres) %>% tidyr::unnest(cols = sbst) # H0 ist rejected at 5%-level for the deviating stations 5 and 6
+#' }
+get_adj_pvals <- function(tibres, methods = c("holm", "BY", "BH"), rejection = FALSE, level = 0.1) {
 
-  n.na <- sum(is.na(pvals))
-  pvals <- pvals[!is.na(pvals)]
-  nhyp <- length(pvals)
+  if(is.numeric(tibres)) { tibres <- tibble::tibble(p_boot = tibres)}
 
-  pvals_sort <- sort(pvals, na.last = TRUE)
+  if("holm" %in% methods) {
+    p_holm <- stats::p.adjust(tibres$p_boot, "holm")
+    tibres <- tibres %>% dplyr::mutate(p_holm = p_holm)
 
-  adjp <- (nhyp:1)*pvals_sort
-
-  for( j in 2:nhyp) {
-    adjp[j] <- max(adjp[j-1], adjp[j])
+  }
+  if("BY" %in% methods) {
+    p_by <-  stats::p.adjust(tibres$p_boot, "BY")
+    tibres <- tibres %>% dplyr::mutate(p_by = p_by)
+  }
+  if("BH" %in% methods) {
+      p_bh <- stats::p.adjust(tibres$p_boot, "BH")
+      tibres <- tibres %>% dplyr::mutate(p_bh = p_bh)
   }
 
-  adjp[adjp > 1] <-  1
 
-  c(adjp, rep(NA, n.na))
+  if(rejection) {
+    tibres <- tibres %>% dplyr::mutate_at(dplyr::vars(dplyr::starts_with("p_")), .funs = list(rej = ~(. <= level)))
 
+  }
+  tibres
 }
 
 
-#' Adjust test level for multiple testing
-#'
-#' @param level The test level (numeric value between 0 and 1)
-#' @param nhyp Number of hypotheses that are tested
-#' @param type Either 'Holm' for the Holm-procedure or 'BenjYek' for the Benjamini Yekutieli procedure.
-#'
-#' @return A vector containing the adjusted critical values in ascending order.
-#'
-#' @export
-#'
-#' @examples
-#' adjust_levels(0.1, 9, type = "Holm")
-#' adjust_levels(0.1, 9, type = "BenjYek")
-adjust_levels <- function(level, nhyp, type = "Holm") {
-  if(level <= 0 | level >= 1) {stop("level must be in the interval (0,1).")}
-
-  if(!(type %in% c("Holm", "BenjYek"))) { stop("Type must be either 'Holm' or 'BenjYek'.") }
-
-  if(type == "BenjYek") {
-   denom <- nhyp*sum(1/(1:nhyp))
-   adjlevs <- level*(1:nhyp)/denom
-  }
-  if(type == "Holm") {
-   adjlevs <- level/(nhyp:1)
-  }
-
-  adjlevs
-
-}

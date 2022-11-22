@@ -7,10 +7,11 @@
 plot_regions(
   coord_grid,
   testres,
-  rej_proc = "Holm",
+  method = "holm",
   plot_type = "rejection",
   level = 0.1,
   bins = c(0, 0.005, 0.01, 0.02, 0.05, 1),
+  roi,
   ...
 )
 }
@@ -18,19 +19,21 @@ plot_regions(
 \item{coord_grid}{A dataframe containing the grid coordinates in the columns \verb{from_lon,to_lon, from_lat, to_lat}.
 Can also contain the grid centers through columns \code{meanlon}, \code{meanlat}.}
 
-\item{testres}{Result of bootstrap test as obtained from  \code{\link[findpoolreg]{bootstrap_scalegev_subsets}}.}
-
-\item{rej_proc}{The rejection procedure: either \code{Holm} for the Holm stepdown procedure, or \code{BenjYek} for the
-Benjamini Yekutieli stepup procedure. Only relevant when \code{plot_type = rejection}.}
+\item{testres}{Result of bootstrap test as obtained from  \code{\link[findpoolreg]{bootstrap_scalegev_subsets}} or
+\code{\link[findpoolreg]{bootstrap_pairs_bivmod}}.}
 
 \item{plot_type}{The plot type: either \code{rejection}, then regions are shaded according to test result,
-i.e. rejection or no rejection or \code{pvals}, then  regions are shaded according to their p-value.}
+i.e. rejection or no rejection or \code{pvals}, then  regions are shaded according to their (adjusted) p-values.}
 
 \item{level}{The test level}
 
 \item{bins}{Bins for p-value shades when \code{plot_type = pvals}.}
 
 \item{...}{additional arguments passed to \code{\link[leaflet]{leafletOptions}}}
+
+\item{rej_proc}{The rejection procedure: either \code{holm} for the Holm stepdown procedure, \code{BY} for the
+Benjamini Yekutieli stepup procedure, \code{BH} for the Benjamini Hochberg step-up procedure or \code{IM} when not adjusting for
+multiple testing.}
 }
 \value{
 A leaflet plot.
@@ -56,8 +59,8 @@ seed = 1, locations = meancoords, temp.cov =  cvrt)
 subsets <- purrr::map(c(1:9, 11:16), ~ c(10, .x))
 bootres <- bootstrap_scalegev_subsets(data = simdat, temp.cov = cvrt, locations = meancoords, subsets = subsets)
 
-plot_regions(coord_grid = coord_grid, testres = bootres, rej_proc = "Holm", zoom)
-plot_regions(coord_grid = coord_grid, testres = bootres, rej_proc = "BenjYek")
+plot_regions(coord_grid = coord_grid, testres = bootres, method = "holm", plot_type = "pvals")
+plot_regions(coord_grid = coord_grid, testres = bootres, method = "BY")
 
 plot_regions(coord_grid = coord_grid, testres = bootres, plot_type = "pvals")
 }

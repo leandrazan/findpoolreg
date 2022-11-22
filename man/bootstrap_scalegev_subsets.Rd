@@ -16,6 +16,7 @@ bootstrap_scalegev_subsets(
   subsets,
   return_boots = FALSE,
   adj_pvals = FALSE,
+  adj_method = "BH",
   set_start_vals = TRUE
 )
 }
@@ -48,7 +49,9 @@ on the multivariate chain rule, or \code{basic} for a very simplistic but faster
 
 \item{return_boots}{Logical; whether to return bootstrapped values of test statistic and p-value.}
 
-\item{adj_pvals}{Logical; whether to return column containing Holm-adjusted p-values.}
+\item{adj_pvals}{Logical; whether to return column containing adjusted p-values.}
+
+\item{adj_method}{Method used for adjusting the p-values. Passed to \code{\link[stats]{p.adjust}}.}
 
 \item{set_start_vals}{Logical; whether to set the start values for the optimisation carried out on the bootstrap
 to the estimates obtained under H0 on input data}

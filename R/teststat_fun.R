@@ -153,6 +153,7 @@ teststat <- function(theta, covmat, H0 = "ED", covmat_scaled = TRUE, n = NULL) {
 #' xx <- matrix(rep(exp((1:100)/100), 3)*evd::rgev(300), ncol = 3)
 #' compute_teststat(data = xx, temp.cov = (1:100)/100, H0 = "ED")
 compute_teststat <- function(data, temp.cov, H0 = "ED", varmeth = "chain", start_vals = NULL) {
+
   d <- ncol(data)
   equal_distr <- ifelse(H0 == "ED", TRUE, FALSE)
 
