@@ -2,7 +2,7 @@
 % Please edit documentation in R/visualise_pvalues.R
 \name{plot_regions}
 \alias{plot_regions}
-\title{Visualise bootrstrap test results for pairs}
+\title{Visualise bootstrap test results for pairwise testing}
 \usage{
 plot_regions(
   coord_grid,
@@ -10,8 +10,8 @@ plot_regions(
   method = "holm",
   plot_type = "rejection",
   level = 0.1,
-  bins = c(0, 0.005, 0.01, 0.02, 0.05, 1),
-  roi,
+  bins = c(0, 0.05, 0.075, 0.1, 1),
+  roi = NULL,
   ...
 )
 }
@@ -29,7 +29,9 @@ i.e. rejection or no rejection or \code{pvals}, then  regions are shaded accordi
 
 \item{bins}{Bins for p-value shades when \code{plot_type = pvals}.}
 
-\item{...}{additional arguments passed to \code{\link[leaflet]{leafletOptions}}}
+\item{roi}{Region of interest, passed as numeric vector containing region labels. Can be omitted when region of interest is of length 1.}
+
+\item{...}{additional arguments passed to \code{\link[leaflet]{leafletOptions}}, e.g. \code{zoomControl = FALSE}}
 
 \item{rej_proc}{The rejection procedure: either \code{holm} for the Holm stepdown procedure, \code{BY} for the
 Benjamini Yekutieli stepup procedure, \code{BH} for the Benjamini Hochberg step-up procedure or \code{IM} when not adjusting for
@@ -39,29 +41,29 @@ multiple testing.}
 A leaflet plot.
 }
 \description{
-Visualise bootrstrap test results for pairs
+Visualise bootstrap test results for pairwise testing
 }
 \examples{
 
-## generate data and compute test results
 \dontrun{
-coord_grid <- tidyr::expand_grid(from_lat = seq(44.75, 48.5, 1.25), from_lon = seq(7.25, 13.25, 2) ) \%>\%
-         dplyr::mutate(to_lon = from_lon + 2, to_lat = from_lat + 1.25, Region = 1:16)
+## generate data and compute test results
+coord_grid <- tidyr::expand_grid(from_lat = seq(44.75, 47.25, 1.25), from_lon = seq(7.25, 11.25, 2) ) \%>\%
+         dplyr::mutate(to_lon = from_lon + 2, to_lat = from_lat + 1.25, Region = 1:9)
 
 meancoords <-   as.matrix((coord_grid \%>\% dplyr::mutate(meanlon = (from_lon + to_lon)/2,
                                                            meanlat = (from_lat + to_lat)/2))[ , 6:7])
 cvrt <- (-20:79)/100
-simdat <- generateData(n = 100, d = 16, scale = c(rep(6, 3), rep(5, 10), rep(3, 3)),
-                       loc =  c(rep(24, 3), rep(20, 7), rep(17, 6)), shape =  c(rep(0.1, 13), rep(0.15, 3)),
-                       alpha =  c(rep(3, 3), rep(2.5, 7),  rep(2, 6)),
+simdat <- generateData(n = 100, d = 9, scale = c(rep(6, 3), rep(5, 3), rep(3, 3)),
+                       loc =  c(rep(24, 3), rep(20, 3), rep(17, 3)), shape =  c(rep(0.1, 6), rep(0.15, 3)),
+                       alpha =  c(rep(3, 3), rep(2.5, 3),  rep(2, 3)),
 seed = 1, locations = meancoords, temp.cov =  cvrt)
 
-subsets <- purrr::map(c(1:9, 11:16), ~ c(10, .x))
-bootres <- bootstrap_scalegev_subsets(data = simdat, temp.cov = cvrt, locations = meancoords, subsets = subsets)
+subsets <- purrr::map(c(1:4, 6:9), ~ c(5, .x))
+bootres <- bootstrap_scalegev_subsets(data = simdat, temp.cov = cvrt, locations = meancoords, subsets = subsets, B = 100)
 
-plot_regions(coord_grid = coord_grid, testres = bootres, method = "holm", plot_type = "pvals")
-plot_regions(coord_grid = coord_grid, testres = bootres, method = "BY")
+plot_regions(coord_grid = coord_grid, testres = bootres, method = "holm", plot_type = "pvals", roi = 5)
+plot_regions(coord_grid = coord_grid, testres = bootres, method = "BY", roi = 5)
 
-plot_regions(coord_grid = coord_grid, testres = bootres, plot_type = "pvals")
+plot_regions(coord_grid = coord_grid, testres = bootres, method = "BH", plot_type = "pvals", roi = 5)
 }
 }

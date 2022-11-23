@@ -134,28 +134,32 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
     ## estimate GEV parameters on pooled sample
     pars_h0_ed <- fit_scalegev(data = data,
                                temp.cov = temp.cov, hessian = FALSE)$mle
-    pars_h0_ed <- matrix(rep(pars_h0_ed, d), ncol = d)
-    rownames(pars_h0_ed) <- c("mu0", "sigma0", "gamma0", "alpha0")
+
+
+
+    expo <- exp(pars_h0_ed[4]/pars_h0_ed[1]*temp.cov)
+    loc <- pars_h0_ed[1]*expo
+    scale <- pars_h0_ed[2]*expo
+
+    ## transform margins to GEV-distributions with estimated parameters satisfying H0
 
     X_star_ed <- purrr::map(X_star, ~ {
 
-      ## transform margins to GEV-distributions with estimated parameters satisfying H0
       for (i in 1:d){
-        expo <- exp(pars_h0_ed[4,i]/pars_h0_ed[1,i]*temp.cov)
-        loc <- pars_h0_ed[1,i]*expo
-        scale <- pars_h0_ed[2,i]*expo
 
         .x[,i] <- frech2gev(.x[,i], loc = loc,
                                      scale = scale,
-                                     shape = pars_h0_ed[3,i])
+                                     shape = pars_h0_ed[3])
       }
 
-      #  x_star[NAMatrix] <- NA
       .x
     })
 
+    pars_h0_ed <- matrix(rep(pars_h0_ed, d), ncol = d)
+    rownames(pars_h0_ed) <- c("mu0", "sigma0", "gamma0", "alpha0")
+
     if(set_start_vals) {
-      start_vals_ed <- matrix( rep(pars_h0_ed, 2), ncol = 2)
+      start_vals_ed <- pars_h0_ed
     }
     else {
       start_vals_ed <- NULL
@@ -252,7 +256,7 @@ bootstrap_pairs_bivmod <- function(data, temp.cov, B = 300, H0 = "ED",
   n.pairs <- length(pairs)
   bootres <- tibble::tibble()
   for(j.p in 1:n.pairs) {
-    pair.tmp <- pairs[[j.p]]
+    pair.tmp <- as.character(pairs[[j.p]])
 
     data.tmp <- data[, pair.tmp]
 

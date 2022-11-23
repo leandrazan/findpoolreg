@@ -1,0 +1,74 @@
+---
+title: "Find pooling region"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Find pooling region}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(findpoolreg)
+library(dplyr)
+```
+
+We are going to apply the bootstrap procedures on the example data set contained in this package. 
+First, we load the data and grid coordinates.
+```{r}
+data("example_grid")
+data("example_data")
+```
+We can have a look at the grid to get an impression of the region.
+```{r}
+leaflet::leaflet(data = example_grid)  %>% 
+  leaflet::addTiles() %>%
+  leaflet::addRectangles(lng1 = ~from_lon, lng2 = ~to_lon, lat1 = ~from_lat, lat2 = ~to_lat) %>% 
+  leaflet::addLabelOnlyMarkers(~meanlon, ~meanlat, label =  ~as.character(Region), 
+                               labelOptions = leaflet::labelOptions(noHide = TRUE, textOnly = TRUE,
+                               textsize = 5, style = list("color" = "blue",  "font-weight" = "bold", "font-size" = "30px")))
+```
+
+Now, let's assume we want to find all regions for which the parameters of the scale-GEV distribution seem
+sufficiently similar to those of the region with the label 5. 
+To do so, we first apply the bootstrap procedure based on max-stable processes to all pairs \eqn{(5, d), d = 1, \ldots, 4, 6, \ldots, 9}.
+We first make a list containing all those pairs and get values of the temporal covariate (here: 4-year smoothed GMST anomaly). 
+For this, we assume that our data are observations from Years 1947 to 2021. 
+Also, we check whether the column names of the data matrix are those used when defining the pairs (i.e. numbered from 1 to 9). 
+```{r}
+colnames(example_data)
+subsets <- purrr::map(c(1:4, 6:9), ~ c(5, .x))
+subsets[1:2]  # first two subsets
+cvrt <- (findpoolreg::GMST %>% dplyr::filter(Year >= 1947, Year <= 2021))$smoothedGMST
+```
+Further, we need to assemble the centre points of the grid tiles in a matrix. As we can see, the centers are already contained in 
+the grid data in the correct order, so we only transform the relevant columns to a matrix
+```{r}
+head(example_grid)
+grid_centers <- as.matrix(example_grid[ , c("meanlon", "meanlat")])
+```
+
+
+Now we are ready to the function \code{bootstrap_scalegev_subsets}, which is the one 
+that performs the max-stable-process-based bootstrap procedure.
+
+```{r}
+bootres <- bootstrap_scalegev_subsets(data = example_data, temp.cov = cvrt, locations = meancoords, subsets = subsets, B = 10)
+bootres
+```
+ 
+Once the bootstrapped p-values are computed, we can compute adjusted p-values with the function \code{get_adj_pvals}.
+
+```{r}
+bootres <- get_adj_pvals(bootres, methods = c("BH", "BY"))
+bootres %>% tidyr::unnest(cols = sbst) %>% dplyr::arrange(p_boot)
+```
+
+
+

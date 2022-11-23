@@ -38,6 +38,8 @@ generate_bootsamp_unitfrech <- function(data, temp.cov, locations,
                                         ms_models = c("powexp", "gauss", "brown"), B = 500, sel_crit = "TIC",
                                         warn_msfit = TRUE) {
 
+  if(is.data.frame(locations)) { locations <- as.matrix(locations) }
+
   if(!all(ms_models %in% c("gauss","brown", "powexp", "cauchy", "whitmat", "bessel"))) {
     stop("Only implemented for max-stable models in \n
     'gauss', 'brown', 'powexp', 'cauchy', 'whitmat', 'bessel'.")
@@ -186,9 +188,9 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
   if(H0 %in% c("LS", "both")) {
 
     ## estimate parameters of GEV margins under homogeneity assumption
-    pars_h0_hom <-  fit_spat_scalegev(data = data, temp.cov = temp.cov, hom = TRUE, returnRatios = FALSE)$mle
-    pars_h0_hom[2, ] <- pars_h0_hom[1, ]/pars_h0_hom[2, ]   ## to obtain values for sigma
-    pars_h0_hom[4, ] <- pars_h0_hom[4, ]*pars_h0_hom[1, ]   ## to obtain values for alpha
+    pars_h0_hom <-  fit_local_scaling_gev(data = data, temp.cov = temp.cov, method = "BFGS",
+                                          maxiter = 300, returnRatios = FALSE, start_vals = NULL)$mle
+
     rownames(pars_h0_hom) <- c("mu0", "sigma0", "gamma0", "alpha0")
 
     X_star_if <- purrr::map(X_star, ~ {
@@ -321,7 +323,7 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
                                 ms_models = c("powexp", "gauss", "brown"),
                                 sel_crit = "TIC", varmeth = "chain", subsets, return_boots = FALSE,
-                                adj_pvals = FALSE, adj_method = "BH", set_start_vals = TRUE){
+                                adj_pvals = FALSE, adj_method = "BH", set_start_vals = FALSE){
 
   if(!(H0 %in% c("ED", "LS", "both"))) {
     stop("H0 must be one of 'ED', 'LS' or 'both'.")
@@ -347,80 +349,149 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
   res <- dplyr::tibble()
   # compute bootstrap test statistics  for each subset
 
-  for( j in 1:length(subsets)) {
+  if(H0 == "ED") {
+    for( j in 1:length(subsets)) {
 
-    j.cols <-  subsets[[j]]
-    n.jcols <- length(j.cols)
-    # observations belonging to current subset
-    data.j <- data[, colnames(data) %in% j.cols]
+      j.cols <-  subsets[[j]]
+      n.jcols <- length(j.cols)
+      # observations belonging to current subset
+      data.j <- data[, colnames(data) %in% j.cols]
 
-    ## estimate GEV parameters on pooled sample consisting of current data
-    pars_h0_ed <- fit_scalegev(data = data.j,
-                               temp.cov = temp.cov)$mle
+      ## estimate GEV parameters on pooled sample consisting of current data
+      pars_h0_ed <- fit_scalegev(data = data.j,
+                                 temp.cov = temp.cov)$mle
 
-    # get columns of bootstrap samples corresponding to current subset
-    X_star_ed <- purrr::map(X_star, ~ { .x[ , (colnames(data) %in% j.cols)]})
+      # get columns of bootstrap samples corresponding to current subset
+      X_star_ed <- purrr::map(X_star, ~ { .x[ , (colnames(data) %in% j.cols)]})
 
-    # H0 parameter estimates of current subset
-    expo <- exp(pars_h0_ed[4]/pars_h0_ed[1]*temp.cov)
-    loc <- pars_h0_ed[1]*expo
-    scale <- pars_h0_ed[2]*expo
+      # H0 parameter estimates of current subset
+      expo <- exp(pars_h0_ed[4]/pars_h0_ed[1]*temp.cov)
+      loc <- pars_h0_ed[1]*expo
+      scale <- pars_h0_ed[2]*expo
 
-    # transform margins of bootstrap samples to GEV margins satisfying H0
-    X_star_ed <- purrr::map(X_star_ed, ~ {
+      # transform margins of bootstrap samples to GEV margins satisfying H0
+      X_star_ed <- purrr::map(X_star_ed, ~ {
 
-      ## transform margins to GEV-distributions with estimated parameters satisfying H0
-      for (i in  1:n.jcols){
+        ## transform margins to GEV-distributions with estimated parameters satisfying H0
+        for (i in  1:n.jcols){
 
-        .x[, i] <- frech2gev(.x[, i], loc = loc,
-                                     scale = scale,
-                                     shape = pars_h0_ed[3])
+          .x[, i] <- frech2gev(.x[, i], loc = loc,
+                                       scale = scale,
+                                       shape = pars_h0_ed[3])
+        }
+
+        #  x_star[NAMatrix] <- NA
+        .x
+      })
+
+      if(set_start_vals) {
+        start_vals_ed <- matrix( rep(pars_h0_ed, n.jcols), ncol = n.jcols)
       }
-
-      #  x_star[NAMatrix] <- NA
-      .x
-    })
-
-    if(set_start_vals) {
-      start_vals_ed <- matrix( rep(pars_h0_ed, n.jcols), ncol = n.jcols)
-    }
-    else {
-      start_vals_ed <- NULL
-    }
-    # Calculate test statistics for generated bootstrap data
-    results_sim_ed <- purrr::map_dfr(X_star_ed,  ~ compute_teststat(.x, temp.cov = temp.cov,
-                                                                    H0 = "ED", varmeth = varmeth, start_vals = start_vals_ed))
+      else {
+        start_vals_ed <- NULL
+      }
+      # Calculate test statistics for generated bootstrap data
+      results_sim_ed <- purrr::map_dfr(X_star_ed,  ~ compute_teststat(.x, temp.cov = temp.cov,
+                                                                      H0 = "ED", varmeth = varmeth, start_vals = start_vals_ed))
 
 
-    # results_sim_if <- purrr::map_dfr(X_star_if,  ~ compute_teststat(.x, temp.cov = temp.cov,
-    #                                                                 equal_distr = FALSE))
-    results_ed <- compute_teststat(data = data.j, temp.cov = temp.cov,
-                                   H0 = "ED", varmeth = varmeth)
-    #results_if <- compute_teststat(data = data.j, temp.cov = temp.cov, equal_distr = FALSE)
+      # results_sim_if <- purrr::map_dfr(X_star_if,  ~ compute_teststat(.x, temp.cov = temp.cov,
+      #                                                                 equal_distr = FALSE))
+      results_ed <- compute_teststat(data = data.j, temp.cov = temp.cov,
+                                     H0 = "ED", varmeth = varmeth)
+      #results_if <- compute_teststat(data = data.j, temp.cov = temp.cov, equal_distr = FALSE)
 
-    tmp_ed <- rank(c(results_ed$p, results_sim_ed$p), na.last = NA)
-    p_corr_ed <- as.vector((tmp_ed[1]-1)/length(tmp_ed))
+      tmp_ed <- rank(c(results_ed$p, results_sim_ed$p), na.last = NA)
+      p_corr_ed <- as.vector((tmp_ed[1]-1)/length(tmp_ed))
 
-    # tmp_if <- rank(c(results_if$p, results_sim_if$p), na.last = NA)
-    # p_corr_if <- as.vector((tmp_if[1]-1)/length(tmp_if))
+      # tmp_if <- rank(c(results_if$p, results_sim_if$p), na.last = NA)
+      # p_corr_if <- as.vector((tmp_if[1]-1)/length(tmp_if))
 
-    if(return_boots) {
-      res <- res %>% dplyr::bind_rows(
-        dplyr::as_tibble(results_ed)  %>%
-          dplyr::mutate(p_boot = p_corr_ed, bootstrap.B = B, Model_Sel = covmod,
-                 ms_pars = parhat_ms, boot_teststat = list(results_sim_ed),
-                 par_h0 = list(pars_h0_ed), H0 = "ED", sbst  = list(data.frame(t(subsets[[j]])))))
+      if(return_boots) {
+        res <- res %>% dplyr::bind_rows(
+          dplyr::as_tibble(results_ed)  %>%
+            dplyr::mutate(p_boot = p_corr_ed, bootstrap.B = B, Model_Sel = covmod,
+                   ms_pars = parhat_ms, boot_teststat = list(results_sim_ed),
+                   par_h0 = list(pars_h0_ed), H0 = "ED", sbst  = list(data.frame(t(subsets[[j]])))))
 
-    }
-    else {
-      res <- res %>% dplyr::bind_rows(
-        dplyr::as_tibble(results_ed)  %>%
-          dplyr::mutate(p_boot = p_corr_ed, bootstrap.B = B, Model_Sel = covmod,
-                 ms_pars = parhat_ms,
-                 par_h0 = list(pars_h0_ed), H0 ="ED", sbst  = list(data.frame(t(subsets[[j]])))))
+      }
+      else {
+        res <- res %>% dplyr::bind_rows(
+          dplyr::as_tibble(results_ed)  %>%
+            dplyr::mutate(p_boot = p_corr_ed, bootstrap.B = B, Model_Sel = covmod,
+                   ms_pars = parhat_ms,
+                   par_h0 = list(pars_h0_ed), H0 ="ED", sbst  = list(data.frame(t(subsets[[j]])))))
 
+      }
     }
   }
+  if(H0 == "LS") {
+
+    for( j in 1:length(subsets)) {
+
+      j.cols <-  subsets[[j]]
+      n.jcols <- length(j.cols)
+      # observations belonging to current subset
+      data.j <- data[, colnames(data) %in% j.cols]
+
+
+      ## estimate parameters of GEV margins under homogeneity assumption
+      pars_h0_hom <-  fit_local_scaling_gev(data = data.j, temp.cov = temp.cov, method = "BFGS",
+                                            maxiter = 300, returnRatios = FALSE, start_vals = NULL)$mle
+      # get columns of bootstrap samples corresponding to current subset
+      X_star_ed <- purrr::map(X_star, ~ { .x[ , (colnames(data) %in% j.cols)]})
+
+
+      X_star_if <- purrr::map(X_star, ~ {
+
+        ## transform margins to GEV-distributions with estimated parameters satisfying H0
+        for (i in 1: n.jcols){
+          expo <- exp(pars_h0_hom[4,i]/pars_h0_hom[1,i]*temp.cov)
+          loc <- pars_h0_hom[1,i]*expo
+          scale <- pars_h0_hom[2,i]*expo
+
+          .x[,i] <- frech2gev(.x[,i], loc = loc,
+                              scale = scale,
+                              shape = pars_h0_hom[3,i])
+        }
+
+        .x
+      })
+
+
+      # Calculate test statistics for generated bootstrap data
+      results_sim_if <- purrr::map_dfr(X_star_if,  ~ compute_teststat(.x, temp.cov = temp.cov,
+                                                                      H0 = "LS", varmeth = varmeth, start_vals = NULL))
+
+
+      results_if <- compute_teststat(data = data.j, temp.cov = temp.cov,
+                                     H0 = "LS", varmeth = varmeth)
+
+      tmp_if <- rank(c(results_if$p, results_sim_if$p), na.last = NA)
+      p_corr_if <- as.vector((tmp_if[1]-1)/length(tmp_if))
+
+
+      if(return_boots) {
+        res <- res %>% dplyr::bind_rows(
+          dplyr::as_tibble(results_if)  %>%
+            dplyr::mutate(p_boot = p_corr_if, bootstrap.B = B, Model_Sel = covmod,
+                          ms_pars = parhat_ms, boot_teststat = list(results_sim_if),
+                          par_h0 = list(pars_h0_hom), H0 = "LS", sbst  = list(data.frame(t(subsets[[j]])))))
+
+      }
+      else {
+        res <- res %>% dplyr::bind_rows(
+          dplyr::as_tibble(results_if)  %>%
+            dplyr::mutate(p_boot = p_corr_if, bootstrap.B = B, Model_Sel = covmod,
+                          ms_pars = parhat_ms,
+                          par_h0 = list(pars_h0_hom), H0 ="LS", sbst  = list(data.frame(t(subsets[[j]])))))
+
+      }
+    }
+
+
+  }
+
 
   if(adj_pvals) {
     adjp <- p.adjust(res$p_boot, method = method)

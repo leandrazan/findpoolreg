@@ -7,10 +7,8 @@
 fit_spat_scalegev(
   data,
   temp.cov,
-  hom = FALSE,
   method = "BFGS",
   maxiter = 300,
-  returnRatios = TRUE,
   varmeth = "chain",
   start_vals = NULL
 )
@@ -21,15 +19,9 @@ fit_spat_scalegev(
 \item{temp.cov}{Values of the temporal covariate of the scale-GEV-model.
 Must be of same record length as thr observations.}
 
-\item{hom}{logical; if \code{TRUE}, a spatial scale-GEV-model with homogeneity constraint is fitted.
-If \code{FALSE}, a scale-GEV-model is fitted seperatly to each station. to fit model with homogeneity constraint. If}
-
 \item{method}{Method passed to \code{\link[stats:optim]{stats::optim()}}.}
 
 \item{maxiter}{Maximum number of iterations during maximisation (also passed to \code{\link[stats:optim]{stats::optim()}}).}
-
-\item{returnRatios}{logical and only relevant if \code{hom = TRUE}: when TRUE, location-scale- and trend-location-parameter ratios are returned,
-when FALSE, the plain parameters are returned.}
 
 \item{varmeth}{Method for estimation of variance-covariance matrix. Can be either \code{chain} (the default) for an estimator based
 on the multivariate chain rule, or \code{basic} for a very simplistic but faster method.}
@@ -38,10 +30,7 @@ on the multivariate chain rule, or \code{basic} for a very simplistic but faster
 }
 \value{
 A list containing the estimated parameter values in \code{mle} and
-\itemize{
-\item if \code{hom = TRUE}:  the value of the negative log-likelihood and a convergence code
-\item if \code{hom = FALSE}:  an estimation of the variance-covariance matrix.
-}
+an estimation of the variance-covariance matrix.
 }
 \description{
 Fit spatial scale-GEV-model to data
@@ -53,12 +42,5 @@ xx <- (1:3)*matrix(rep(exp((1:100)/100), 3)*evd::rgev(300), ncol = 3)
 # fit componentwise scale-GEV-model
 fit_spat_scalegev(data = xx, temp.cov = (1:100)/100, hom = FALSE)$mle
 
-# fit spatial scale-GEV-model with homogeneity constraint
-
-## return global parameters, i.e. ratios of location/scale and trend/location
-fit_spat_scalegev(data = xx, temp.cov = (1:100)/100, hom = TRUE, returnRatios = TRUE)$mle
-
-## return local parameters, i.e. location, scale, shape and trend for each station
-fit_spat_scalegev(data = xx, temp.cov = (1:100)/100, hom = TRUE, returnRatios = FALSE)$mle
 
 }

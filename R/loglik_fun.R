@@ -200,19 +200,14 @@ nll_scalegev_hom <- function(params, data, temp.cov){
 #' @param data A matrix or dataframe representing the data, where each column corresponds to one site.
 #' @param temp.cov Values of the temporal covariate of the scale-GEV-model.
 #' Must be of same record length as thr observations.
-#' @param hom logical; if `TRUE`, a spatial scale-GEV-model with homogeneity constraint is fitted.
-#' If `FALSE`, a scale-GEV-model is fitted seperatly to each station. to fit model with homogeneity constraint. If
 #' @param method  Method passed to [stats::optim()].
 #' @param maxiter Maximum number of iterations during maximisation (also passed to [stats::optim()]).
-#' @param returnRatios logical and only relevant if `hom = TRUE`: when TRUE, location-scale- and trend-location-parameter ratios are returned,
-#' when FALSE, the plain parameters are returned.
 #' @param varmeth Method for estimation of variance-covariance matrix. Can be either `chain` (the default) for an estimator based
 #' on the multivariate chain rule, or `basic` for a very simplistic but faster method.
 #' @param start_vals Optional: matrix containing start values for the ML optimisation.
 #'
 #' @return A list containing the estimated parameter values in `mle` and
-#' * if `hom = TRUE`:  the value of the negative log-likelihood and a convergence code
-#' * if `hom = FALSE`:  an estimation of the variance-covariance matrix.
+#'  an estimation of the variance-covariance matrix.
 #' @export
 #'
 #' @examples
@@ -222,51 +217,14 @@ nll_scalegev_hom <- function(params, data, temp.cov){
 #' # fit componentwise scale-GEV-model
 #' fit_spat_scalegev(data = xx, temp.cov = (1:100)/100, hom = FALSE)$mle
 #'
-#' # fit spatial scale-GEV-model with homogeneity constraint
 #'
-#' ## return global parameters, i.e. ratios of location/scale and trend/location
-#' fit_spat_scalegev(data = xx, temp.cov = (1:100)/100, hom = TRUE, returnRatios = TRUE)$mle
-#'
-#' ## return local parameters, i.e. location, scale, shape and trend for each station
-#' fit_spat_scalegev(data = xx, temp.cov = (1:100)/100, hom = TRUE, returnRatios = FALSE)$mle
-#'
-fit_spat_scalegev <- function(data, temp.cov, hom = FALSE, method = "BFGS",
-                           maxiter = 300, returnRatios = TRUE, varmeth = "chain", start_vals = NULL) {
+fit_spat_scalegev <- function(data, temp.cov, method = "BFGS",
+                           maxiter = 300, varmeth = "chain", start_vals = NULL) {
 
   if(!is.matrix(data)) { data <- as.matrix(data)}
 
   n.dat <- nrow(data)
   d <- ncol(data)
-
-
-  if(hom) {
-
-    start_st <-  fit_scalegev(data, temp.cov = temp.cov, hessian = FALSE)$mle
-    start_vals <- c(rep(start_st[1], d), start_st[1]/start_st[2], start_st[3],
-                    start_st[4]/start_st[1])
-
-    names(start_vals ) <- c(paste0("mu_", 1:d), "delta", "gamma", "eta")
-    # print(start_vals)
-    mlest <- stats::optim(start_vals, fn = nll_scalegev_hom,
-                   data = data, temp.cov = temp.cov,  method = method,
-                   control = list(maxit = maxiter))
-    if(!(mlest$convergence == 0) ){print("Optimization didn't succeed.")}
-    mlpar <- mlest$par
-    if(returnRatios) {
-     mlpar <- matrix(c(mlpar[1:d], rep(mlpar[d+1],d),  rep(mlpar[d+2], d),
-                      rep(mlpar[d+3], d)),
-                    byrow = TRUE, nrow = 4)
-     rownames(mlpar) <- c("mu", "delta", "gamma", "eta")
-    } else {
-      mlpar <- matrix(c(mlpar[1:d], mlpar[1:d]/rep(mlpar[d+1],d),  rep(mlpar[d+2], d),
-                        rep(mlpar[d+3], d)*mlpar[1:d]),
-                      byrow = TRUE, nrow = 4)
-      rownames(mlpar) <- c("mu", "sigma", "gamma", "alpha")
-    }
-    return(list(mle = mlpar, nll = mlest$value, conv = mlest$convergence))
-  }
-
-  else {
 
     if(varmeth == "basic") {
 
@@ -329,7 +287,6 @@ fit_spat_scalegev <- function(data, temp.cov, hom = FALSE, method = "BFGS",
       rownames(Sigma) <- colnames(Sigma) <- paste0(c("mu", "sigma", "gamma", "alpha"), rep(1:d, each = 4))
 
       return(list(mle = ml.est, cov.mat = Sigma))
-    }
   }
 }
 
@@ -392,6 +349,68 @@ grad_ll_scalegev <- function(data, params, temp.cov) {
                 nrow = 4, byrow = TRUE))
 }
 
+
+#' Fit spatial scale-GEV-model allowing for a local scaling factor to data
+#'
+#' @param data A matrix or dataframe representing the data, where each column corresponds to one site.
+#' @param temp.cov Values of the temporal covariate of the scale-GEV-model.
+#' Must be of same record length as thr observations.
+#' @param method  Method passed to [stats::optim()].
+#' @param maxiter Maximum number of iterations during maximisation (also passed to [stats::optim()]).
+#' @param returnRatios logical: when TRUE, location-scale- and trend-location-parameter ratios are returned,
+#' when FALSE, the plain parameters are returned.
+#' @param start_vals Optional: matrix containing start values for the ML optimisation.
+#'
+#' @return A list containing the estimated parameter values in `mle` and the value of the negative log-likelihood and a convergence code
+
+#' @export
+#'
+#' @examples
+#' # generate some data
+#' xx <- (1:3)*matrix(rep(exp((1:100)/100), 3)*evd::rgev(300), ncol = 3)
+#'
+#'
+#' # fit spatial scale-GEV-model with homogeneity constraint
+#'
+#' ## return global parameters, i.e. ratios of location/scale and trend/location
+#' fit_local_scaling_gev(data = xx, temp.cov = (1:100)/100, returnRatios = TRUE)$mle
+#'
+#' ## return local parameters, i.e. location, scale, shape and trend for each station
+#' fit_local_scaling_gev(data = xx, temp.cov = (1:100)/100, returnRatios = FALSE)$mle
+#'
+fit_local_scaling_gev <- function(data, temp.cov, method = "BFGS",
+                              maxiter = 300, returnRatios = TRUE, start_vals = NULL) {
+
+  if(!is.matrix(data)) { data <- as.matrix(data)}
+
+  n.dat <- nrow(data)
+  d <- ncol(data)
+
+  start_st <-  fit_scalegev(data, temp.cov = temp.cov, hessian = FALSE)$mle
+  start_vals <- c(rep(start_st[1], d), start_st[1]/start_st[2], start_st[3],
+                    start_st[4]/start_st[1])
+
+  names(start_vals ) <- c(paste0("mu_", 1:d), "delta", "gamma", "eta")
+    # print(start_vals)
+  mlest <- stats::optim(start_vals, fn = nll_scalegev_hom,
+                   data = data, temp.cov = temp.cov,  method = method,
+                   control = list(maxit = maxiter))
+  if(!(mlest$convergence == 0) ){print("Optimization didn't succeed.")}
+  mlpar <- mlest$par
+  if(returnRatios) {
+   mlpar <- matrix(c(mlpar[1:d], rep(mlpar[d+1],d),  rep(mlpar[d+2], d),
+                    rep(mlpar[d+3], d)),
+                  byrow = TRUE, nrow = 4)
+   rownames(mlpar) <- c("mu", "delta", "gamma", "eta")
+  } else {
+    mlpar <- matrix(c(mlpar[1:d], mlpar[1:d]/rep(mlpar[d+1],d),  rep(mlpar[d+2], d),
+                      rep(mlpar[d+3], d)*mlpar[1:d]),
+                    byrow = TRUE, nrow = 4)
+    rownames(mlpar) <- c("mu", "sigma", "gamma", "alpha")
+  }
+  return(list(mle = mlpar, nll = mlest$value, conv = mlest$convergence))
+
+}
 
 
 

@@ -158,7 +158,7 @@ compute_teststat <- function(data, temp.cov, H0 = "ED", varmeth = "chain", start
   equal_distr <- ifelse(H0 == "ED", TRUE, FALSE)
 
   if(is.null(d)) {stop("Data must have dimension at least 2.")}
-  mlest <- tryCatch(fit_spat_scalegev(data, temp.cov, hom = FALSE, varmeth = varmeth, start_vals = start_vals),
+  mlest <- tryCatch(fit_spat_scalegev(data, temp.cov, varmeth = varmeth, start_vals = start_vals),
                     error = function(egal) list(mle = NA, cov.mat = NA))
 
   val <- teststat(theta = mlest$mle, covmat = mlest$cov.mat, n = nrow(data),
