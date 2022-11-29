@@ -86,7 +86,7 @@ leaflet::leaflet(data = example_grid, width = 500, height = 400)  %>%
                                                           "font-size" = "30px")))
 ```
 
-![](find_pool_reg_readme_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](vignettes/find_pool_reg_readme_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 Now, let’s assume we want to find all regions for which the parameters
 of the scale-GEV distribution seem sufficiently similar to those of the
