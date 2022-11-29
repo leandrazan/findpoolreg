@@ -16,7 +16,7 @@ location *d* in year *t*, follow a generalised extreme value (GEV)
 distribution with parameters
 
 ```math
-e^{i\pi} + 1 = 0
+\mu_d(t) = \mu_d\exp(\alpha_d c(t)/\mu_d)
 ```
 
 *μ*<sub>*d*</sub>(*t*) = *μ*<sub>*d*</sub>exp (*α*<sub>*d*</sub>*c*(*t*)/*μ*<sub>*d*</sub>),
