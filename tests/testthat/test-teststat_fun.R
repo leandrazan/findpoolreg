@@ -37,7 +37,7 @@ test_that("Derivative of H0 LS functional works", {
 test_that("Singular covariance matrix produces warning", {
   xx <- matrix(rep(exp((1:100)/100), 3)*evd::rgev(300), ncol = 3)
   xx <- cbind(xx, xx[, 1])
-  mlest <- fit_spat_scalegev(data = xx, temp.cov = (1:100)/100, hom = FALSE)
+  mlest <- fit_spat_scalegev(data = xx, temp.cov = (1:100)/100)
   expect_warning(teststat(mlest$mle, mlest$cov.mat, n = 100))
 })
 

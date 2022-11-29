@@ -4,7 +4,7 @@
 \alias{compute_rl}
 \title{Compute RL of GEV distribution in reference climate}
 \usage{
-compute_rl(theta, Tyrl, type, ref_gmst = NULL, ...)
+compute_rl(theta, Tyrl, type, ref_gmst = NULL)
 }
 \arguments{
 \item{theta}{Estimated GEV parameters}

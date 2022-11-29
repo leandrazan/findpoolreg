@@ -42,6 +42,10 @@ on the multivariate chain rule, or \code{basic} for a very simplistic but faster
 \item{pairs}{A list of pairs on which to perform the test.}
 
 \item{return_boots}{Logical; whether to return bootstrapped test statistics and p values.}
+
+\item{set_start_vals}{logical; whether to use parameter estimates obtained with constraint of
+the null-hypothesis as starting values for optimisation on bootstrap samples.
+If \code{FALSE} (default and recommended), standard routine with trend parameter set to 0 will be used.}
 }
 \value{
 A tibble with the following columns:

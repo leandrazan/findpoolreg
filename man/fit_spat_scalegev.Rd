@@ -40,7 +40,7 @@ Fit spatial scale-GEV-model to data
 xx <- (1:3)*matrix(rep(exp((1:100)/100), 3)*evd::rgev(300), ncol = 3)
 
 # fit componentwise scale-GEV-model
-fit_spat_scalegev(data = xx, temp.cov = (1:100)/100, hom = FALSE)$mle
+fit_spat_scalegev(data = xx, temp.cov = (1:100)/100)$mle
 
 
 }

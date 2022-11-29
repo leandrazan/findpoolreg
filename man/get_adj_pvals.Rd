@@ -35,10 +35,12 @@ Compute adjusted p-values
 cvrt <- (1:100)/100
 coords <- matrix(20*abs(stats::rnorm(6*2)), ncol = 2)
 x <- generateData(seed = 2, n = 100, temp.cov = cvrt, d= 6, locations = coords,
-loc = c(rep(10,4), c(8, 8)), scale = c(rep(2,4), c(1.5, 1.5)), shape = rep(0.1, 6), alpha = rep(2,6))
+loc = c(rep(10,4), c(8, 8)), scale = c(rep(2,4), c(1.5, 1.5)), shape = rep(0.1, 6),
+alpha = rep(2,6))
 
 sbsts <- list( c(1,2), c(1,3), c(1,4), c(1,5), c(1,6))
-bootres <- bootstrap_scalegev_subsets(data = x, temp.cov = cvrt, locations = coords, varmeth = "chain", B = 200, subsets = sbsts)
+bootres <- bootstrap_scalegev_subsets(data = x, temp.cov = cvrt,
+             locations = coords, varmeth = "chain", B = 200, subsets = sbsts)
 get_adj_pvals(bootres) # H0 ist rejected at 5\%-level for the deviating stations 5 and 6
 }
 }

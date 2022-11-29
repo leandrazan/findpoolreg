@@ -63,7 +63,8 @@ cvrt <- (1:100)/100
 coords <- matrix(20*abs(stats::rnorm(4*2)), ncol = 2)
 x <- generateData(seed = 2, n = 100, temp.cov = cvrt, d= 4, locations = coords)
 
-bootres <- bootstrap_scalegev(data = x, temp.cov = cvrt, locations = coords, varmeth = "chain", B = 200)
+bootres <- bootstrap_scalegev(data = x, temp.cov = cvrt, locations = coords,
+                              varmeth = "chain", B = 200)
 bootres
 }
 }

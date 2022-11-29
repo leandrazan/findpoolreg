@@ -4,9 +4,9 @@
 #' Can also contain the grid centers through columns `meanlon`, `meanlat`.
 #' @param testres Result of bootstrap test as obtained from  \code{\link[findpoolreg]{bootstrap_scalegev_subsets}} or
 #'  \code{\link[findpoolreg]{bootstrap_pairs_bivmod}}.
-#' @param rej_proc The rejection procedure: either `holm` for the Holm stepdown procedure, `BY` for the
-#' Benjamini Yekutieli stepup procedure, `BH` for the Benjamini Hochberg step-up procedure or `IM` when not adjusting for
-#' multiple testing.
+#' @param method The method used for adjusting p-values. Must be one of `holm` (for the Holm stepdown procedure),
+#'  `BY` (for the Benjamini Yekutieli stepup procedure), `BH` (for the Benjamini Hochberg step-up procedure) or
+#'  `boot` when not adjusting for multiple testing.
 #' @param plot_type The plot type: either `rejection`, then regions are shaded according to test result,
 #'  i.e. rejection or no rejection or `pvals`, then  regions are shaded according to their (adjusted) p-values.
 #' @param level The test level
@@ -22,24 +22,32 @@
 #'
 #' \dontrun{
 #' ## generate data and compute test results
-#' coord_grid <- tidyr::expand_grid(from_lat = seq(44.75, 47.25, 1.25), from_lon = seq(7.25, 11.25, 2) ) %>%
+#' coord_grid <- tidyr::expand_grid(from_lat = seq(44.75, 47.25, 1.25),
+#'                                  from_lon = seq(7.25, 11.25, 2)) %>%
 #'          dplyr::mutate(to_lon = from_lon + 2, to_lat = from_lat + 1.25, Region = 1:9)
 #'
-#' meancoords <-   as.matrix((coord_grid %>% dplyr::mutate(meanlon = (from_lon + to_lon)/2,
-#'                                                            meanlat = (from_lat + to_lat)/2))[ , 6:7])
+#' meancoords <- as.matrix((coord_grid %>%
+#'                    dplyr::mutate(meanlon = (from_lon + to_lon)/2,
+#'                     meanlat = (from_lat + to_lat)/2))[ , 6:7])
 #' cvrt <- (-20:79)/100
-#' simdat <- generateData(n = 100, d = 9, scale = c(rep(6, 3), rep(5, 3), rep(3, 3)),
-#'                        loc =  c(rep(24, 3), rep(20, 3), rep(17, 3)), shape =  c(rep(0.1, 6), rep(0.15, 3)),
+#' simdat <- generateData(n = 100, d = 9,
+#'                        scale = c(rep(6, 3), rep(5, 3), rep(3, 3)),
+#'                        loc =  c(rep(24, 3), rep(20, 3), rep(17, 3)),
+#'                        shape =  c(rep(0.1, 6), rep(0.15, 3)),
 #'                        alpha =  c(rep(3, 3), rep(2.5, 3),  rep(2, 3)),
-#' seed = 1, locations = meancoords, temp.cov =  cvrt)
+#'                        seed = 1, locations = meancoords, temp.cov =  cvrt)
 #'
 #' subsets <- purrr::map(c(1:4, 6:9), ~ c(5, .x))
-#' bootres <- bootstrap_scalegev_subsets(data = simdat, temp.cov = cvrt, locations = meancoords, subsets = subsets, B = 100)
+#' bootres <- bootstrap_scalegev_subsets(data = simdat, temp.cov = cvrt, locations = meancoords,
+#'  subsets = subsets, B = 100)
 #'
-#' visualise_test_res(coord_grid = coord_grid, testres = bootres, method = "holm", plot_type = "pvals", loi = 5)
-#' visualise_test_res(coord_grid = coord_grid, testres = bootres, method = "BY", loi = 5)
+#' visualise_test_res(coord_grid = coord_grid, testres = bootres,
+#'                    method = "holm", plot_type = "pvals", loi = 5)
+#' visualise_test_res(coord_grid = coord_grid, testres = bootres, method = "BY",
+#'                    loi = 5)
 #'
-#' pvisualise_test_res(coord_grid = coord_grid, testres = bootres, method = "BH", plot_type = "pvals", loi = 5)
+#' pvisualise_test_res(coord_grid = coord_grid, testres = bootres, method = "BH",
+#'                     plot_type = "pvals", loi = 5)
 #'}
 visualise_test_res <- function(coord_grid, testres, method = "holm", plot_type = "rejection", level = 0.1,
                          bins =  c(0, 0.05, 0.075,  0.1, 1), loi = NULL,  ...) {

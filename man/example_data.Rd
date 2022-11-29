@@ -15,7 +15,7 @@ example_data
 Example data set
 }
 \examples{
-The data was generated with the following code.
+# The data was generated with the following code.
 meancoords <-  as.matrix(findpoolreg::example_grid[ , 6:7])
 cvrt <- findpoolreg::GMST$smoothedGMST[68:142]
 generateData(n = 75, d = 9,

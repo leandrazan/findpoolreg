@@ -14,7 +14,8 @@
 #'
 #' @examples
 #'  xx <- exp((1:100)/100)*evd::rgev(100)
-#'  score_standard_univ(x = xx, theta = c(10, 2, 0, 1), temp.cov = (1:100)/100, rel_par = FALSE)
+#'  score_standard_univ(x = xx, theta = c(10, 2, 0, 1),
+#'                      temp.cov = (1:100)/100, rel_par = FALSE)
 score_standard_univ <- function(x, theta, temp.cov = NULL, rel_par = FALSE) {
 
   if(is.null(temp.cov)) {stop("Temporal covariate must be provided.")}
@@ -104,7 +105,8 @@ estimate_gammas <- function(data, parmat, temp.cov = NULL, rel_par = FALSE) {
   }
   for (j in 1:d) {
     for (k in j:d) {
-      Gammas[ ((j -1)*3 +1) : (j*3), ((k -1)*3 +1) : (k*3) ] <- cov(t(scores[, , j]), t(scores[ , , k]))
+      Gammas[ ((j -1)*3 +1) : (j*3), ((k -1)*3 +1) : (k*3) ] <- stats::cov(t(scores[, , j]), t(scores[ , , k]),
+                                                                           use = "pairwise.complete.obs")
       Gammas[ ((k -1)*3 +1) : (k*3), ((j -1)*3 +1) : (j*3) ] <- t(Gammas[ ((j -1)*3 +1) : (j*3), ((k -1)*3 +1) : (k*3) ] )
     }
   }
@@ -200,8 +202,10 @@ Tsigma_inv <- function(par, temp.cov) {
 #'
 #'
 #' # compute covariance between ML estimate of station 1 and ML estimate of station 3
-#' Gams <-  estimate_gammas(x[, c(1,3)], parmat = cbind(mle1$mle, mle3$mle), temp.cov =cvrt, rel_par = FALSE)
-#' compute_sigmajk(mle1$mle, mle3$mle, Gams[ 1:3, 4:6], cvrt, solve(mle1$hessian), solve(mle3$hessian))
+#' Gams <-  estimate_gammas(x[, c(1,3)], parmat = cbind(mle1$mle, mle3$mle),
+#'                          temp.cov =cvrt, rel_par = FALSE)
+#' compute_sigmajk(mle1$mle, mle3$mle, Gams[ 1:3, 4:6], cvrt,
+#'                 solve(mle1$hessian), solve(mle3$hessian))
 #'
 compute_sigmajk <- function(par.j, par.k, Gammajk, temp.cov, Jinv.j , Jinv.k) {
 

@@ -213,6 +213,9 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
 #' @param loi The location of primary interest for the analysis. Can be omitted if `pairs` is provided.
 #' @param pairs A list of pairs on which to perform the test.
 #' @param return_boots Logical; whether to return bootstrapped test statistics and p values.
+#' @param set_start_vals logical; whether to use parameter estimates obtained with constraint of
+#' the null-hypothesis as starting values for optimisation on bootstrap samples.
+#' If `FALSE` (default and recommended), standard routine with trend parameter set to 0 will be used.
 #'
 #' @return  A tibble with the following columns:
 #' * `teststat` The value of the test statistic on the observed data

@@ -4,7 +4,8 @@
 #' @format A 75 x 9 matrix of observations sampled from a scale-GEV model with spatial dependence structure
 #' described by a max-stable process.
 #'
-#' @examples The data was generated with the following code.
+#' @examples
+#' # The data was generated with the following code.
 #' meancoords <-  as.matrix(findpoolreg::example_grid[ , 6:7])
 #' cvrt <- findpoolreg::GMST$smoothedGMST[68:142]
 #' generateData(n = 75, d = 9,

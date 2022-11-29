@@ -163,7 +163,8 @@ generate_bootsamp_unitfrech <- function(data, temp.cov, locations,
 #' coords <- matrix(20*abs(stats::rnorm(4*2)), ncol = 2)
 #' x <- generateData(seed = 2, n = 100, temp.cov = cvrt, d= 4, locations = coords)
 #'
-#' bootres <- bootstrap_scalegev(data = x, temp.cov = cvrt, locations = coords, varmeth = "chain", B = 200)
+#' bootres <- bootstrap_scalegev(data = x, temp.cov = cvrt, locations = coords,
+#'                               varmeth = "chain", B = 200)
 #' bootres
 #' }
 bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
@@ -316,11 +317,13 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 #' cvrt <- (1:100)/100
 #' coords <- matrix(20*abs(stats::rnorm(6*2)), ncol = 2)
 #' x <- generateData(seed = 2, n = 100, temp.cov = cvrt, d= 6, locations = coords,
-#' loc = c(rep(10,4), c(8, 8)), scale = c(rep(2,4), c(1.5, 1.5)), shape = rep(0.1, 6), alpha = rep(2,6))
+#'                  loc = c(rep(10,4), c(8, 8)), scale = c(rep(2,4), c(1.5, 1.5)),
+#'                  shape = rep(0.1, 6), alpha = rep(2,6))
 #'
 #' sbsts <- list( c(1,2), c(1,3), c(1,4), c(1,5), c(1,6))
-#' bootres <- bootstrap_scalegev_subsets(data = x, temp.cov = cvrt, locations = coords, varmeth = "chain", B = 200, subsets = sbsts,
-#' adj_pvals = TRUE)
+#' bootres <- bootstrap_scalegev_subsets(data = x, temp.cov = cvrt,
+#'              locations = coords, varmeth = "chain", B = 200, subsets = sbsts,
+#'              adj_pvals = TRUE)
 #' bootres # H0 ist rejected at 5%-level for the deviating stations 5 and 6
 #' }
 bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
@@ -497,7 +500,7 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
 
 
   if(adj_pvals) {
-    adjp <- p.adjust(res$p_boot, method = method)
+    adjp <- stats::p.adjust(res$p_boot, method = method)
     res <- res %>% dplyr::mutate(adj_p = adjp)
   }
 
@@ -528,10 +531,12 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
 #' cvrt <- (1:100)/100
 #' coords <- matrix(20*abs(stats::rnorm(6*2)), ncol = 2)
 #' x <- generateData(seed = 2, n = 100, temp.cov = cvrt, d= 6, locations = coords,
-#' loc = c(rep(10,4), c(8, 8)), scale = c(rep(2,4), c(1.5, 1.5)), shape = rep(0.1, 6), alpha = rep(2,6))
+#' loc = c(rep(10,4), c(8, 8)), scale = c(rep(2,4), c(1.5, 1.5)), shape = rep(0.1, 6),
+#' alpha = rep(2,6))
 #'
 #' sbsts <- list( c(1,2), c(1,3), c(1,4), c(1,5), c(1,6))
-#' bootres <- bootstrap_scalegev_subsets(data = x, temp.cov = cvrt, locations = coords, varmeth = "chain", B = 200, subsets = sbsts)
+#' bootres <- bootstrap_scalegev_subsets(data = x, temp.cov = cvrt,
+#'              locations = coords, varmeth = "chain", B = 200, subsets = sbsts)
 #' get_adj_pvals(bootres) # H0 ist rejected at 5%-level for the deviating stations 5 and 6
 #' }
 get_adj_pvals <- function(tibres, methods = c("holm", "BY", "BH"), rejection = FALSE, level = 0.1) {

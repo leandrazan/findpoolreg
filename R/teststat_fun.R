@@ -109,7 +109,7 @@ grad_h <- function(par.mat, equal_distr = TRUE) {
 #' xx <- matrix(rep(exp((1:100)/100), 3)*evd::rgev(300), ncol = 3)
 #'
 #' # computer scale-GEV parameters for each station and corresponding covariance matrix
-#' mlest <- fit_spat_scalegev(data = xx, temp.cov = (1:100)/100, hom = FALSE)
+#' mlest <- fit_spat_scalegev(data = xx, temp.cov = (1:100)/100)
 #'
 #' # compute test statistic
 #' teststat(mlest$mle, covmat = mlest$cov.mat, n = 100, H0 = "ED")

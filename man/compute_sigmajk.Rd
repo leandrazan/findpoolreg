@@ -41,7 +41,9 @@ mle3 <- fit_scalegev(x[, 3], temp.cov =cvrt)
 
 
 # compute covariance between ML estimate of station 1 and ML estimate of station 3
-Gams <-  estimate_gammas(x[, c(1,3)], parmat = cbind(mle1$mle, mle3$mle), temp.cov =cvrt, rel_par = FALSE)
-compute_sigmajk(mle1$mle, mle3$mle, Gams[ 1:3, 4:6], cvrt, solve(mle1$hessian), solve(mle3$hessian))
+Gams <-  estimate_gammas(x[, c(1,3)], parmat = cbind(mle1$mle, mle3$mle),
+                         temp.cov =cvrt, rel_par = FALSE)
+compute_sigmajk(mle1$mle, mle3$mle, Gams[ 1:3, 4:6], cvrt,
+                solve(mle1$hessian), solve(mle3$hessian))
 
 }

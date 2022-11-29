@@ -25,5 +25,6 @@ Computes three dimensional score function of data with margins transformed to st
 }
 \examples{
  xx <- exp((1:100)/100)*evd::rgev(100)
- score_standard_univ(x = xx, theta = c(10, 2, 0, 1), temp.cov = (1:100)/100, rel_par = FALSE)
+ score_standard_univ(x = xx, theta = c(10, 2, 0, 1),
+                     temp.cov = (1:100)/100, rel_par = FALSE)
 }
