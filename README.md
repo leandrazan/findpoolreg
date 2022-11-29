@@ -14,6 +14,11 @@ The tests are based on the assumption that the annual/seasonal
 precipitation extremes *M*<sub>*d*</sub><sup>(*t*)</sup>, observed at
 location *d* in year *t*, follow a generalised extreme value (GEV)
 distribution with parameters
+
+```math
+e^{i\pi} + 1 = 0
+```
+
 *μ*<sub>*d*</sub>(*t*) = *μ*<sub>*d*</sub>exp (*α*<sub>*d*</sub>*c*(*t*)/*μ*<sub>*d*</sub>),
 *σ*<sub>*d*</sub>(*t*) = *σ*<sub>*d*</sub>exp (*α*<sub>*d*</sub>*c*(*t*)/*μ*<sub>*d*</sub>),
 *γ*<sub>*d*</sub>(*t*) = *γ*<sub>*d*</sub>.
