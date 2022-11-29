@@ -11,7 +11,7 @@ bootstrap_pairs_bivmod(
   H0 = "ED",
   biv_models = c("log", "alog", "hr"),
   varmeth = "chain",
-  reg_of_int = NULL,
+  loi = NULL,
   pairs = NULL,
   return_boots = FALSE,
   set_start_vals = FALSE
@@ -37,7 +37,7 @@ Must be a subset of
 Can be either \code{chain} (the default) for an estimator based
 on the multivariate chain rule, or \code{basic} for a very simplistic but faster method.}
 
-\item{reg_of_int}{The region of primary interest for the analysis. Can be omitted if \code{pairs} is provided.}
+\item{loi}{The location of primary interest for the analysis. Can be omitted if \code{pairs} is provided.}
 
 \item{pairs}{A list of pairs on which to perform the test.}
 
@@ -68,7 +68,7 @@ Bootstrap p-values of test-statistic on pairs
 cvrt <- (1:100)/100
 coords <- matrix(20*abs(stats::rnorm(4*2)), ncol = 2)
 x <- generateData(seed = 2, n = 100, temp.cov = cvrt, d= 4, locations = coords)
-bootres <- bootstrap_pairs_bivmod(data = x, temp.cov = cvrt, varmeth = "chain", B = 200, reg_of_int = 3)
+bootres <- bootstrap_pairs_bivmod(data = x, temp.cov = cvrt, varmeth = "chain", B = 200, loi = 3)
 bootres
 }
 }

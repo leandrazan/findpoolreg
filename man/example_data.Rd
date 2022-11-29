@@ -17,12 +17,12 @@ Example data set
 \examples{
 The data was generated with the following code.
 meancoords <-  as.matrix(findpoolreg::example_grid[ , 6:7])
-cvrt <- (-20:54)/100
+cvrt <- findpoolreg::GMST$smoothedGMST[68:142]
 generateData(n = 75, d = 9,
-            scale = c(rep(6, 3), rep(5, 3), rep(3, 3)),
-            loc =  c(rep(24, 3), rep(20, 3), rep(17, 3)),
-            shape =  c(rep(0.1, 6), rep(0.15, 3)),
-            alpha =  c(rep(3, 3), rep(2.5, 3),  rep(2, 3)),
+            scale = c(6, 6, 6, 5, 5, 6, 5, 5, 6),
+            loc =  c(23, 23, 22, 20, 20, 20, 20, 20, 21),
+            shape =  c( 0.12, 0.1, 0.15, 0.1, 0.1, 0.15, 0.11, 0.1, 0.05),
+            alpha =  c(rep(3, 3), rep(2.5, 6)),
             seed = 1, locations = meancoords, temp.cov = cvrt)
 
 }

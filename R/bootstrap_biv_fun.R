@@ -210,7 +210,7 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
 #' \code{\link[findpoolreg]{fit_spat_scalegev}}.
 #'  Can be either `chain` (the default) for an estimator based
 #' on the multivariate chain rule, or `basic` for a very simplistic but faster method.
-#' @param reg_of_int The region of primary interest for the analysis. Can be omitted if `pairs` is provided.
+#' @param loi The location of primary interest for the analysis. Can be omitted if `pairs` is provided.
 #' @param pairs A list of pairs on which to perform the test.
 #' @param return_boots Logical; whether to return bootstrapped test statistics and p values.
 #'
@@ -234,22 +234,22 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
 #' cvrt <- (1:100)/100
 #' coords <- matrix(20*abs(stats::rnorm(4*2)), ncol = 2)
 #' x <- generateData(seed = 2, n = 100, temp.cov = cvrt, d= 4, locations = coords)
-#' bootres <- bootstrap_pairs_bivmod(data = x, temp.cov = cvrt, varmeth = "chain", B = 200, reg_of_int = 3)
+#' bootres <- bootstrap_pairs_bivmod(data = x, temp.cov = cvrt, varmeth = "chain", B = 200, loi = 3)
 #' bootres
 #' }
 bootstrap_pairs_bivmod <- function(data, temp.cov, B = 300, H0 = "ED",
                                     biv_models = c( "log", "alog", "hr"),
-                                    varmeth = "chain", reg_of_int = NULL, pairs = NULL,
+                                    varmeth = "chain", loi = NULL, pairs = NULL,
                                     return_boots = FALSE, set_start_vals = FALSE) {
 
   if(is.null(pairs)) {
-    if(is.null(reg_of_int)) {
+    if(is.null(loi)) {
       stop("Please provide either the region of intereset or a list of pairs on which to perform the test.")
     }
     else {
       regs <- colnames(data)
-      regs <- regs[!(regs == reg_of_int)]
-      pairs <- purrr::map(regs, ~ c(reg_of_int, .x))
+      regs <- regs[!(regs == loi)]
+      pairs <- purrr::map(regs, ~ c(loi, .x))
     }
   }
 

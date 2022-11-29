@@ -17,7 +17,7 @@ bootstrap_scalegev_subsets(
   return_boots = FALSE,
   adj_pvals = FALSE,
   adj_method = "BH",
-  set_start_vals = TRUE
+  set_start_vals = FALSE
 )
 }
 \arguments{
@@ -68,8 +68,13 @@ A tibble with the following columns:
 \item \code{boot_teststat} (if \code{return_boots = TRUE}) Data frame containing the test statistic and corresponding p-value for each bootstrap replicate.
 \item \code{par_h0} The parameter estimates under H0.
 \item \code{H0} Character code of the null hypothesis.
-\item \code{sbst} The subset on which the hypothesis was tested.
 \item \code{adj_p} (if \code{adj_pvals = TRUE}) The Holm-adjusted p-values.
+}
+
+Further, we have the columns
+\itemize{
+\item \code{X1} and \code{X2} when testing pairs, giving the labels of the respective pair
+\item \code{sbst} when testing triples or larger subsets, containing a list of the respective subset.
 }
 }
 \description{
@@ -87,6 +92,6 @@ loc = c(rep(10,4), c(8, 8)), scale = c(rep(2,4), c(1.5, 1.5)), shape = rep(0.1, 
 sbsts <- list( c(1,2), c(1,3), c(1,4), c(1,5), c(1,6))
 bootres <- bootstrap_scalegev_subsets(data = x, temp.cov = cvrt, locations = coords, varmeth = "chain", B = 200, subsets = sbsts,
 adj_pvals = TRUE)
-bootres \%>\% tidyr::unnest(cols = sbst) # H0 ist rejected at 5\%-level for the deviating stations 5 and 6
+bootres # H0 ist rejected at 5\%-level for the deviating stations 5 and 6
 }
 }

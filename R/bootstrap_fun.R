@@ -302,8 +302,11 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 #' * `boot_teststat` (if `return_boots = TRUE`) Data frame containing the test statistic and corresponding p-value for each bootstrap replicate.
 #' * `par_h0` The parameter estimates under H0.
 #' * `H0` Character code of the null hypothesis.
-#' * `sbst` The subset on which the hypothesis was tested.
 #' * `adj_p` (if `adj_pvals = TRUE`) The Holm-adjusted p-values.
+#'
+#' Further, we have the columns
+#' * `X1` and `X2` when testing pairs, giving the labels of the respective pair
+#' * `sbst` when testing triples or larger subsets, containing a list of the respective subset.
 #' @export
 #'
 #' @examples
@@ -318,7 +321,7 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 #' sbsts <- list( c(1,2), c(1,3), c(1,4), c(1,5), c(1,6))
 #' bootres <- bootstrap_scalegev_subsets(data = x, temp.cov = cvrt, locations = coords, varmeth = "chain", B = 200, subsets = sbsts,
 #' adj_pvals = TRUE)
-#' bootres %>% tidyr::unnest(cols = sbst) # H0 ist rejected at 5%-level for the deviating stations 5 and 6
+#' bootres # H0 ist rejected at 5%-level for the deviating stations 5 and 6
 #' }
 bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
                                 ms_models = c("powexp", "gauss", "brown"),
@@ -498,6 +501,9 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
     res <- res %>% dplyr::mutate(adj_p = adjp)
   }
 
+  if(all(purrr::map_dbl(subsets, ~ length(.x)) == 2)) {
+    res <- res %>% tidyr::unnest(cols = sbst)
+  }
   res
 
 }
@@ -526,7 +532,7 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
 #'
 #' sbsts <- list( c(1,2), c(1,3), c(1,4), c(1,5), c(1,6))
 #' bootres <- bootstrap_scalegev_subsets(data = x, temp.cov = cvrt, locations = coords, varmeth = "chain", B = 200, subsets = sbsts)
-#' get_adj_pvals(bootres) %>% tidyr::unnest(cols = sbst) # H0 ist rejected at 5%-level for the deviating stations 5 and 6
+#' get_adj_pvals(bootres) # H0 ist rejected at 5%-level for the deviating stations 5 and 6
 #' }
 get_adj_pvals <- function(tibres, methods = c("holm", "BY", "BH"), rejection = FALSE, level = 0.1) {
 
