@@ -257,7 +257,7 @@ bootstrap_pairs_bivmod <- function(data, temp.cov, B = 300, H0 = "ED",
   }
 
   n.pairs <- length(pairs)
-  bootres <- tibble::tibble()
+  bootres <- dplyr::tibble()
   for(j.p in 1:n.pairs) {
     pair.tmp <- as.character(pairs[[j.p]])
 

@@ -541,7 +541,7 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
 #' }
 get_adj_pvals <- function(tibres, methods = c("holm", "BY", "BH"), rejection = FALSE, level = 0.1) {
 
-  if(is.numeric(tibres)) { tibres <- tibble::tibble(p_boot = tibres)}
+  if(is.numeric(tibres)) { tibres <- dplyr::tibble(p_boot = tibres)}
 
   if("holm" %in% methods) {
     p_holm <- stats::p.adjust(tibres$p_boot, "holm")
