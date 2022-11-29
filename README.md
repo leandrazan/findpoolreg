@@ -16,8 +16,8 @@ location *d* in year *t*, follow a generalised extreme value (GEV)
 distribution with parameters
 
 ```math
-\mu_d(t) = \mu_d\exp(\alpha_d c(t)/\mu_d), 
-\sigma_d(t) = \sigma_d\exp(\alpha_d c(t)/\mu_d)
+\mu_d(t) = \mu_d\exp(\alpha_d c(t)/\mu_d), \
+\sigma_d(t) = \sigma_d\exp(\alpha_d c(t)/\mu_d), \
 \gamma_d(t) \equiv \gamma_d
 ```
 Here, *c*(*t*) denotes the global mean surface temperature anomaly in year t.
