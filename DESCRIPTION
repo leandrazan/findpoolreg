@@ -25,7 +25,8 @@ Imports:
     purrr,
     tidyr,
     dplyr,
-    magrittr
+    magrittr,
+    leaflet
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
