@@ -3,6 +3,8 @@ Find pooling region
 
 ### Example on how to use the package to find possible pooling region for precipitation extremes. 
 
+Find this vignette by running `browseVignettes("findpoolreg")` after installing the package.
+
 ``` r
 library(findpoolreg)
 library(dplyr)
