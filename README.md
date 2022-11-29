@@ -16,12 +16,10 @@ location *d* in year *t*, follow a generalised extreme value (GEV)
 distribution with parameters
 
 ```math
-\mu_d(t) = \mu_d\exp(\alpha_d c(t)/\mu_d)
+\mu_d(t) = \mu_d\exp(\alpha_d c(t)/\mu_d), 
+\sigma_d(t) = \sigma_d\exp(\alpha_d c(t)/\mu_d)
+\gamma_d(t) \equiv \gamma_d
 ```
-
-*μ*<sub>*d*</sub>(*t*) = *μ*<sub>*d*</sub>exp (*α*<sub>*d*</sub>*c*(*t*)/*μ*<sub>*d*</sub>),
-*σ*<sub>*d*</sub>(*t*) = *σ*<sub>*d*</sub>exp (*α*<sub>*d*</sub>*c*(*t*)/*μ*<sub>*d*</sub>),
-*γ*<sub>*d*</sub>(*t*) = *γ*<sub>*d*</sub>.
 Here, *c*(*t*) denotes the global mean surface temperature anomaly in year t.
 The parameter vector is thus
 **ϑ**<sub>*d*</sub> = (*μ*<sub>*d*</sub>, *σ*<sub>*d*</sub>, *γ*<sub>*d*</sub>, *α*<sub>*d*</sub>)<sup>⊤</sup>.
