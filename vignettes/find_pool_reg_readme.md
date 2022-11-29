@@ -12,13 +12,10 @@ The tests are based on the assumption that the annual/seasonal
 precipitation extremes *M*<sub>*d*</sub><sup>(*t*)</sup>, observed at
 location *d* in year *t*, follow a generalised extreme value (GEV)
 distribution with parameters
-$$
-    \\mu\_d(t) = \\mu\_d \\exp\\left(\\frac{\\alpha\_d \\mathrm{GMST}(t)}{ \\mu\_d} \\right), 
-    \\quad
-    \\sigma\_d(t) = \\sigma\_d \\exp\\left(\\frac{\\alpha\_d \\mathrm{GMST}(t)}{ \\mu\_d} \\right), 
-    \\quad
-    \\gamma\_d(t) =\\gamma\_d.
-$$
+*μ*<sub>*d*</sub>(*t*) = *μ*<sub>*d*</sub>exp (*α*<sub>*d*</sub>*c*(*t*)/*μ*<sub>*d*</sub>),
+*σ*<sub>*d*</sub>(*t*) = *σ*<sub>*d*</sub>exp (*α*<sub>*d*</sub>*c*(*t*)/*μ*<sub>*d*</sub>),
+*γ*<sub>*d*</sub>(*t*) = *γ*<sub>*d*</sub>.
+Here, c*(*t*) denotes the global mean surface temperature anomaly in year t.
 The parameter vector is thus
 **ϑ**<sub>*d*</sub> = (*μ*<sub>*d*</sub>, *σ*<sub>*d*</sub>, *γ*<sub>*d*</sub>, *α*<sub>*d*</sub>)<sup>⊤</sup>.
 The null-hypothesis that is tested is for a given set of locations *A*
