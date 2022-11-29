@@ -183,4 +183,4 @@ visualise_test_res(coord_grid = example_grid, testres = bootres, method = "BH",
                    width = 800, height = 400)
 ```
 
-![](find_pool_reg_readme_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](vignettes/find_pool_reg_readme_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
