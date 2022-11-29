@@ -1,6 +1,8 @@
 Find pooling region
 ================
 
+### Example on how to use the package to find possible pooling region for precipitation extremes
+
 ``` r
 library(findpoolreg)
 library(dplyr)
