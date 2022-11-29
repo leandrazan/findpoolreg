@@ -1,6 +1,8 @@
 Find pooling region
 ================
 
+### Example on how to use the package to find possible pooling region for precipitation extremes. 
+
 ``` r
 library(findpoolreg)
 library(dplyr)
@@ -12,9 +14,12 @@ The tests are based on the assumption that the annual/seasonal
 precipitation extremes *M*<sub>*d*</sub><sup>(*t*)</sup>, observed at
 location *d* in year *t*, follow a generalised extreme value (GEV)
 distribution with parameters
-*μ*<sub>*d*</sub>(*t*) = *μ*<sub>*d*</sub>exp (*α*<sub>*d*</sub>*c*(*t*)/*μ*<sub>*d*</sub>),
-*σ*<sub>*d*</sub>(*t*) = *σ*<sub>*d*</sub>exp (*α*<sub>*d*</sub>*c*(*t*)/*μ*<sub>*d*</sub>),
-*γ*<sub>*d*</sub>(*t*) = *γ*<sub>*d*</sub>.
+
+```math
+\mu_d(t) = \mu_d\exp(\alpha_d c(t)/\mu_d), \
+\sigma_d(t) = \sigma_d\exp(\alpha_d c(t)/\mu_d), \
+\gamma_d(t) \equiv \gamma_d
+```
 Here, *c*(*t*) denotes the global mean surface temperature anomaly in year t.
 The parameter vector is thus
 **ϑ**<sub>*d*</sub> = (*μ*<sub>*d*</sub>, *σ*<sub>*d*</sub>, *γ*<sub>*d*</sub>, *α*<sub>*d*</sub>)<sup>⊤</sup>.
@@ -83,7 +88,7 @@ leaflet::leaflet(data = example_grid, width = 500, height = 400)  %>%
                                                           "font-size" = "30px")))
 ```
 
-![](find_pool_reg_readme_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](vignettes/find_pool_reg_readme_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 Now, let’s assume we want to find all regions for which the parameters
 of the scale-GEV distribution seem sufficiently similar to those of the
@@ -180,4 +185,4 @@ visualise_test_res(coord_grid = example_grid, testres = bootres, method = "BH",
                    width = 800, height = 400)
 ```
 
-![](find_pool_reg_readme_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](vignettes/find_pool_reg_readme_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
