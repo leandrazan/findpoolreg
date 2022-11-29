@@ -500,7 +500,7 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
 
 
   if(adj_pvals) {
-    adjp <- stats::p.adjust(res$p_boot, method = method)
+    adjp <- stats::p.adjust(res$p_boot, method = adj_method)
     res <- res %>% dplyr::mutate(adj_p = adjp)
   }
 

@@ -94,7 +94,7 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
   if(H0 %in% c("LS", "both")) {
 
     ## estimate parameters of GEV margins under homogeneity assumption
-    pars_h0_hom <-  fit_spat_scalegev(data = data, temp.cov = temp.cov, hom = TRUE, returnRatios = FALSE)$mle
+    pars_h0_hom <-  fit_local_scaling_gev(data = data, temp.cov = temp.cov, returnRatios = FALSE)$mle
     pars_h0_hom[2, ] <- pars_h0_hom[1, ]/pars_h0_hom[2, ]   ## to obtain values for sigma
     pars_h0_hom[4, ] <- pars_h0_hom[4, ]*pars_h0_hom[1, ]   ## to obtain values for alpha
     rownames(pars_h0_hom) <- c("mu0", "sigma0", "gamma0", "alpha0")
