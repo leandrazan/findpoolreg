@@ -13,7 +13,7 @@
 #' compute_rl(theta = c(mu = 20, sigma = 2, gamma = 0.2, alpha = 2),
 #' Tyrl = c(50, 100), type = "scale", ref_gmst = c(0.5, 0.95))
 #'
-compute_rl <- function(theta, Tyrl, type, ref_gmst = NULL) {
+compute_rl <- function(theta, Tyrl, type = "scale", ref_gmst = NULL) {
 
 
   if(type == "stationary") {
