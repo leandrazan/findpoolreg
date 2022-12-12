@@ -1,0 +1,146 @@
+---
+title: "Find pooling region"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Find pooling region}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(findpoolreg)
+library(dplyr)
+```
+
+## Preliminaries and Model Assumptions
+
+The tests are based on the assumption that the annual/seasonal precipitation extremes $M_d^{(t)}$, observed at 
+location $d$ in year $t$, follow a generalised extreme value (GEV) distribution with parameters
+$$
+	\mu_d(t) = \mu_d \exp\left(\frac{\alpha_d \mathrm{GMST}(t)}{ \mu_d} \right), 
+	\quad
+	\sigma_d(t) = \sigma_d \exp\left(\frac{\alpha_d \mathrm{GMST}(t)}{ \mu_d} \right), 
+	\quad
+	\gamma_d(t) =\gamma_d.
+$$
+The parameter vector is thus $\mathbf \vartheta_d = (\mu_d, \sigma_d, \gamma_d, \alpha_d)^\top$.
+The null-hypothesis that is tested is for a given set of locations $A$ with $|A| \geq 2$ is
+$$ H_0(A): \quad \exists\, \mathbf \vartheta_A \in (0, \infty)^2 \times \mathbb{R}^2:\  \forall\, d \in A: \quad \mathbf \vartheta_d = \mathbf \vartheta_A. $$
+Therefore, whenever the test rejects the null-hypothesis for a pair, the pair can be considered as not homogeneous and observations from 
+the respective locations should not be pooled to a larger sample. 
+
+## Application of bootstrap procedure
+
+We are going to apply the bootstrap procedures on the example data set contained in this package. 
+Note that the example data set is a simulated data set, with  parameters
+```{r, echo = FALSE}
+data.frame(Location = 1:9, mu = c(23, 23, 22, 20, 20, 20, 20, 20, 21), 
+           sigma = c(6, 6, 6, 5, 5, 6, 5, 5, 6), 
+           gamma = c( 0.12, 0.1, 0.15, 0.1, 0.1, 0.15, 0.11, 0.1, 0.05), 
+           alpha = c(rep(3, 3), rep(2.5, 6)))
+```
+We therefore have $\mathbf{\vartheta}_4 = \mathbf{\vartheta}_5 = \mathbf{\vartheta}_8$, 
+and $\mathbf{\vartheta}_7$ deviates only very slightly.
+
+First, we load the data and grid coordinates.
+```{r}
+data("example_grid")
+data("example_data")
+head(example_grid)
+head(example_data)
+```
+We can have a look at the grid to get an impression of the region.
+```{r}
+leaflet::leaflet(data = example_grid, width = 500, height = 400)  %>% 
+  leaflet::addTiles() %>%
+  leaflet::addRectangles(lng1 = ~from_lon, lng2 = ~to_lon, lat1 = ~from_lat, lat2 = ~to_lat) %>% 
+  leaflet::addLabelOnlyMarkers(~meanlon, ~meanlat, label =  ~as.character(Region), 
+                               labelOptions = leaflet::labelOptions(noHide = TRUE, textOnly = TRUE,
+                               textsize = 5, style = list("color" = "blue",  "font-weight" = "bold", 
+                                                          "font-size" = "30px")))
+```
+
+Now, let's assume we want to find all regions for which the parameters of the scale-GEV distribution seem
+sufficiently similar to those of the region with the label 5. 
+To do so, we first apply the bootstrap procedure based on max-stable processes to all pairs $(5, d), d = 1, \ldots, 4, 6, \ldots, 9$.
+We first make a list containing all those pairs and get values of the temporal covariate (here: 4-year smoothed GMST anomaly). 
+For this, we assume that our data are observations from Years 1947 to 2021. 
+Also, we check whether the column names of the data matrix are those used when defining the pairs (i.e. numbered from 1 to 9). 
+```{r}
+colnames(example_data)
+subsets <- purrr::map(c(1:4, 6:9), ~ c(5, .x))
+subsets[1:2]  # first two subsets
+cvrt <- (findpoolreg::GMST %>% dplyr::filter(Year >= 1947, Year <= 2021))$smoothedGMST
+```
+Further, we need to assemble the centre points of the grid tiles in a matrix. As we can see, the centers are already contained in 
+the grid data in the correct order, so we only transform the relevant columns to a matrix
+```{r}
+head(example_grid)
+grid_centers <- as.matrix(example_grid[ , c("meanlon", "meanlat")])
+```
+
+
+Now we are ready to the function $\texttt{bootstrap_scalegev_subsets}$, which is the one 
+that performs the max-stable-process-based bootstrap procedure.
+
+```{r}
+set.seed(1)
+bootres <- bootstrap_scalegev_subsets(data = example_data, temp.cov = cvrt,
+                                      locations = grid_centers, subsets = subsets, B = 500)
+bootres
+```
+ 
+Once the bootstrapped p-values are computed, we can compute adjusted p-values with the function $\texttt{get_adj_pvals}$.
+Here, we choose the Benjamini Hochberg and the Benjamini Yekutieli methods for adjusting the p-values. 
+
+```{r}
+bootres <- get_adj_pvals(bootres, methods = c("BH", "BY"))
+bootres %>% dplyr::arrange(p_boot)
+```
+
+We can also plot the grid tiles shaded in the colours of the respective p-values, with the function $\texttt{visualise_test_res}$.
+The method for adjusting p-values is provided in the argument method.
+```{r}
+visualise_test_res(coord_grid = example_grid, testres = bootres, method = "BH",
+                   plot_type = "pvals", level = 0.1, Zoom = 2, position = "topright",
+                   width = 800, height = 400)
+```
+
+Perfect, the test detects all deviations from the null-hypothesis.
+We can also perform the boostrap based on bivariate extreme value distributions. 
+For this, we apply the function $\texttt{bootstrap_pairs_bivmod}$ to the pairs defined above, or we 
+just supply the location of primary interest, which is 5 in our case, and then all pairs will be tested
+automatically.
+
+```{r}
+set.seed(1)
+boot_biv <- bootstrap_pairs_bivmod(data = example_data, temp.cov = cvrt, loi = 5, B = 300)
+boot_biv <- get_adj_pvals(boot_biv)
+boot_biv
+```
+
+Again, the p-values can be visualised. This time, we want to visualise the p-values obtained when 
+ignoring the multiple testing procedure, i.e. the plain bootstrap p-values.
+
+```{r}
+visualise_test_res(coord_grid = example_grid, testres = boot_biv, method = "boot",
+                   plot_type = "pvals", level = 0.1, Zoom = 2, position = "topright",
+                   width = 800, height = 400)
+```
+Again, the test detects all deviations.
+Let's also try the more conservative Holm procedure. 
+
+```{r}
+visualise_test_res(coord_grid = example_grid, testres = boot_biv, method = "holm",
+                   plot_type = "pvals", level = 0.1, Zoom = 2, position = "topright",
+                   width = 800, height = 400)
+```
+
+
