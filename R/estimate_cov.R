@@ -234,9 +234,8 @@ compute_sigmajk <- function(par.j, par.k, Gammajk, temp.cov, Jinv.j , Jinv.k) {
 
   gj <- alphaj*temp.cov/muj^2
   gk <- alphak*temp.cov/muk^2
-
   sig11 <- mean(fk * ( fj * s11 - gj*s12) -
-                  gk*( fj*s12 - alphaj*temp.cov*s22/muj^2), na.rm = TRUE)
+                  gk*( fj*s12 - gj *s22), na.rm = TRUE) # alphaj*temp.cov*s22/muj^2), na.rm = TRUE)
 
   sig12 <-  mean((fj*s12 - gj*s22)/sigmak, na.rm = TRUE)
 
@@ -277,23 +276,40 @@ compute_sigmajk <- function(par.j, par.k, Gammajk, temp.cov, Jinv.j , Jinv.k) {
 
 }
 
-# compute_sigmajk <- function(par.j, par.k, Gammajk, temp.cov, Jinv.j , Jinv.k) {
-#
-#   Bj <- Bmat(par.j, temp.cov = temp.cov)
-#   Bk <- Bmat(par.k, temp.cov = temp.cov)
-#
-#   Tj <- Tsigma_inv(par.j, temp.cov = temp.cov)
-#   Tk <- Tsigma_inv(par.k, temp.cov = temp.cov)
-#
-#   BmalT.j <- purrr::map2(Bj, Tj, ~ {.x %*% .y})
-#
-#   BmalT.k <- purrr::map2(Bk, Tk, ~ {.x %*% .y})
-#
-#   Summands <- purrr::map2(BmalT.j, BmalT.k, ~ {.x %*% Gammajk %*% t(.y)} )
-#
-#   Summands <- Reduce("+", Summands)/length(temp.cov)
-#
-#   Jinv.j %*%  Summands %*% Jinv.k
-#
-# }
 
+
+compute_cov_pooled <- function(dat, par, temp.cov, hessmat) {
+
+
+  n.dat <- nrow(dat)
+  d <- ncol(dat)
+  hessmatinv <- solve(d*hessmat) # multiply by d since hessian was computed on data transformed to vector
+                                 # (i.e. it's an average of n*d observations instead of n)
+  scores <- array(dim = c(3, n.dat, d))
+  for( j in 1:d ) {
+    scores[ , , j] <- score_standard_univ(dat[, j], theta = par, temp.cov = temp.cov, rel_par = FALSE)
+  }
+
+  score_sums <- apply(scores, c(1,2), sum)
+
+  cov_score_sums <- var(t(score_sums), na.rm = TRUE)
+
+  Bs <- Bmat(par, temp.cov = temp.cov)
+  Ts <- Tsigma_inv(par, temp.cov = temp.cov)
+
+  summands <- purrr::map2(.x = Bs, .y = Ts, ~ {
+    aa <- (.x %*% .y)
+    return(aa %*% cov_score_sums %*% t(aa))
+    }
+    )
+
+  (hessmatinv %*% ((Reduce("+", summands))/n.dat) %*% hessmatinv)/n.dat
+
+}
+
+
+compute_ci_rl <- function(rlhat, rl_var, level = .05) {
+  quant_norm <- qnorm(1-level/2)
+
+  c("lower" = rlhat - quant_norm*sqrt(rl_var), "upper" = rlhat + quant_norm*sqrt(rl_var))
+}
