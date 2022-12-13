@@ -11,7 +11,8 @@ generate_bootsamp_unitfrech(
   ms_models = c("powexp", "gauss", "brown"),
   B = 500,
   sel_crit = "TIC",
-  warn_msfit = TRUE
+  warn_msfit = TRUE,
+  maxiter = 300
 )
 }
 \arguments{
@@ -19,29 +20,36 @@ generate_bootsamp_unitfrech(
 
 \item{temp.cov}{Numeric vector of temporal covariate, with same length as \code{nrow(data)}}
 
-\item{locations}{A matrix containing longitude and latitude of the stations. Each row corresponds to one station.}
+\item{locations}{A matrix containing longitude and latitude of the stations.
+Each row corresponds to one station.}
 
-\item{ms_models}{A vector containing the names of the max-stable models to fit. Must be a subset of
+\item{ms_models}{A vector containing the names of the max-stable models to fit.
+Must be a subset of
 \verb{gauss, brown, powexp, cauchy, whitmat, bessel}.}
 
 \item{B}{The number of bootstrap samples that are generated.}
 
-\item{sel_crit}{The selection criterion based on which the max-stable model is selected. Must be one of
-\verb{TIC, AIC}.}
+\item{sel_crit}{The selection criterion based on which the max-stable model is
+selected. Must be one of \verb{TIC, AIC}.}
 
-\item{warn_msfit}{logical; whether to print warnings possibly generated during fitting the max-stable process.}
+\item{warn_msfit}{logical; whether to print warnings possibly generated during
+fitting the max-stable process.}
+
+\item{maxiter}{Passed to the optimisation function, giving the maximum number
+of iterations used for optimising the GEV Likelihood (for fitting margins).}
 }
 \value{
 Returns a list of  3.
 \itemize{
-\item \code{X_star} contains the \code{B} bootstrap samples, each being a matrix of same dimension as input data.
+\item \code{X_star} contains the \code{B} bootstrap samples, each being a matrix of same
+dimension as input data.
 \item \code{covmod} is the covariance model of the chosen max-stable process
 \item \code{parhat} the parameters of the chosen max-stable process
 }
 }
 \description{
 This function transform margins to unit Frechet, fits several max-stable models to
-the transformed data and chooses the best fit. Then ootstrap samples from this fitted max-stable model
+the transformed data and chooses the best fit. Then bootstrap samples from this fitted max-stable model
 are generated.
 }
 \examples{

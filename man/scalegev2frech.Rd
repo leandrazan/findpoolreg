@@ -4,7 +4,7 @@
 \alias{scalegev2frech}
 \title{Transform scale-GEV margins to unit Frechet margins}
 \usage{
-scalegev2frech(data, temp.cov, par = NULL)
+scalegev2frech(data, temp.cov, par = NULL, maxiter = 300)
 }
 \arguments{
 \item{data}{Numeric vector of observations}
@@ -14,6 +14,9 @@ scalegev2frech(data, temp.cov, par = NULL)
 \item{par}{Either \code{NULL} (the default) or a vector containing the location, scale, shape and
 trend parameter of the scale-GEV model. If \code{NULL}, the parameters are estimated with
 maximum likelihood.}
+
+\item{maxiter}{Only relevant when \code{par = NULL}; passed to the optimisation
+function, giving the maximum number of iterations used for optimising.}
 }
 \value{
 A vector with same length as input data.

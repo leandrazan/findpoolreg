@@ -5,6 +5,8 @@
 #' @param par Either `NULL` (the default) or a vector containing the location, scale, shape and
 #' trend parameter of the scale-GEV model. If `NULL`, the parameters are estimated with
 #' maximum likelihood.
+#' @param maxiter Only relevant when `par = NULL`; passed to the optimisation
+#' function, giving the maximum number of iterations used for optimising.
 #'
 #' @return A vector with same length as input data.
 #' @export
@@ -17,14 +19,14 @@
 #'
 #' # spot the difference
 #' plot.ts(xx)
-scalegev2frech <- function(data, temp.cov, par = NULL) {
+scalegev2frech <- function(data, temp.cov, par = NULL, maxiter = 300) {
 
 
   if(!is.null(ncol(data))) { stop("Data must be univariate. Use spat_scalegev2frech() instead.")}
   if(!(length(data) == length(temp.cov))) { stop("Data and temporal covariate must have same length.")}
 
   if(is.null(par)) {
-    par <- fit_scalegev(data, temp.cov = temp.cov, hessian = FALSE)$mle
+    par <- fit_scalegev(data, temp.cov = temp.cov, hessian = FALSE, maxiter = maxiter)$mle
   }
 
   loc <- par[1]*exp(par[4]*temp.cov/par[1])
@@ -40,6 +42,8 @@ scalegev2frech <- function(data, temp.cov, par = NULL) {
 #' @param par Either `NULL` (the default) or a \eqn{4 \times ncol(data)} matrix containing the location, scale, shape and
 #' trend parameters of the scale-GEV model of each column of the data. If `NULL`, the parameters are estimated stationwise with
 #' maximum likelihood.
+#' @param maxiter Only relevant when `par = NULL`; passed to the optimisation
+#' function, giving the maximum number of iterations used for optimising.
 #'
 #' @return A matrix of same dimension as input data.
 #' @export
@@ -53,12 +57,12 @@ scalegev2frech <- function(data, temp.cov, par = NULL) {
 #' # spot the difference
 #' plot.ts(xx)
 #' plot.ts(yy)
-spat_scalegev2frech <- function(data, temp.cov, par = NULL) {
+spat_scalegev2frech <- function(data, temp.cov, par = NULL, maxiter = 300) {
 
   d <- ncol(data)
   if(is.null(d)) { stop("Dimension of data must be at least 2. Use scalegev2frech() instead.")}
   for( i in 1:d) {
-    data[, i] <- scalegev2frech(data = data[, i], temp.cov = temp.cov, par = par[, i])
+    data[, i] <- scalegev2frech(data = data[, i], temp.cov = temp.cov, par = par[, i], maxiter = maxiter)
   }
   data
 }

@@ -6,16 +6,22 @@
 #'
 #' @param data Numeric matrix of observations. Each column corresponds to one station.
 #' @param temp.cov  Numeric vector of temporal covariate, with same length as `nrow(data)`
-#' @param locations A matrix containing longitude and latitude of the stations. Each row corresponds to one station.
-#' @param ms_models A vector containing the names of the max-stable models to fit. Must be a subset of
+#' @param locations A matrix containing longitude and latitude of the stations.
+#'  Each row corresponds to one station.
+#' @param ms_models A vector containing the names of the max-stable models to fit.
+#'  Must be a subset of
 #' `gauss, brown, powexp, cauchy, whitmat, bessel`.
 #' @param B The number of bootstrap samples that are generated.
-#' @param sel_crit The selection criterion based on which the max-stable model is selected. Must be one of
-#' `TIC, AIC`.
-#' @param warn_msfit logical; whether to print warnings possibly generated during fitting the max-stable process.
+#' @param sel_crit The selection criterion based on which the max-stable model is
+#'  selected. Must be one of `TIC, AIC`.
+#' @param warn_msfit logical; whether to print warnings possibly generated during
+#'  fitting the max-stable process.
+#' @param maxiter Passed to the optimisation function, giving the maximum number
+#'  of iterations used for optimising the GEV Likelihood (for fitting margins).
 #'
 #' @return Returns a list of  3.
-#' * `X_star` contains the `B` bootstrap samples, each being a matrix of same dimension as input data.
+#' * `X_star` contains the `B` bootstrap samples, each being a matrix of same
+#'   dimension as input data.
 #' * `covmod` is the covariance model of the chosen max-stable process
 #' * `parhat` the parameters of the chosen max-stable process
 #' @export
@@ -35,10 +41,15 @@
 #' plot.ts(bootsamps$X_star[[1]])
 #' plot.ts(bootsamps$X_star[[2]])
 generate_bootsamp_unitfrech <- function(data, temp.cov, locations,
-                                        ms_models = c("powexp", "gauss", "brown"), B = 500, sel_crit = "TIC",
-                                        warn_msfit = TRUE) {
+                                        ms_models = c("powexp", "gauss", "brown"),
+                                        B = 500, sel_crit = "TIC",
+                                        warn_msfit = TRUE, maxiter = 300) {
 
   if(is.data.frame(locations)) { locations <- as.matrix(locations) }
+
+  if(!(ncol(data) == nrow(locations))) { stop("The dimensions of data and locations don't match.") }
+
+  n.dat <- nrow(data)
 
   if(!all(ms_models %in% c("gauss","brown", "powexp", "cauchy", "whitmat", "bessel"))) {
     stop("Only implemented for max-stable models in \n
@@ -48,7 +59,8 @@ generate_bootsamp_unitfrech <- function(data, temp.cov, locations,
   if(!(sel_crit %in% c("TIC", "AIC"))) { stop("Selection criterion must be one of 'TIC', 'AIC'.")}
 
   ## transform margins to unit Frechet based on local GEV parameters
-  unitfrech <- spat_scalegev2frech(data = data, temp.cov = temp.cov)
+  unitfrech <- spat_scalegev2frech(data = data, temp.cov = temp.cov,
+                                   maxiter = maxiter)
 
   ## Fit max-stable processes using models specified in ms_models (margins are unit Frechet)
   fitted_ms <- list()
@@ -75,6 +87,8 @@ generate_bootsamp_unitfrech <- function(data, temp.cov, locations,
 
   model.sel <- which.min(sel.vals)
 
+  if(is.na(model.sel)) {stop("None of the fitted max-stable models has a valid TIC/AIC.")}
+
   # chosen fitted max-stable model
   fitted <- fitted_ms[[model.sel]]
 
@@ -96,7 +110,7 @@ generate_bootsamp_unitfrech <- function(data, temp.cov, locations,
 
     X_star <- replicate(B, {
       ## simulate max stable process with estimated parameters, margins are unit frechet
-      x_star <- SpatialExtremes::rmaxstab(nrow(data), coord = locations, cov.mod = Kovmod,  cov11 = cov11_hat,
+      x_star <- SpatialExtremes::rmaxstab(n.dat, coord = locations, cov.mod = Kovmod,  cov11 = cov11_hat,
                                           cov12 = cov12_hat, cov22 = cov22_hat)
       x_star}, simplify = FALSE)
   }
@@ -114,7 +128,7 @@ generate_bootsamp_unitfrech <- function(data, temp.cov, locations,
 
     X_star <- replicate(B, {
       ## simulate max stable process with estimated parameters, margins are unit frechet
-      x_star <- SpatialExtremes::rmaxstab(nrow(data), coord = locations, cov.mod = Kovmod,
+      x_star <- SpatialExtremes::rmaxstab(n.dat, coord = locations, cov.mod = Kovmod,
                                           nugget = nugg_hat,
                                           range = range_hat, smooth = smooth_hat)
       x_star }, simplify = FALSE)
@@ -143,6 +157,8 @@ generate_bootsamp_unitfrech <- function(data, temp.cov, locations,
 #' \code{\link[findpoolreg]{fit_spat_scalegev}}.
 #'  Can be either `chain` (the default) for an estimator based
 #' on the multivariate chain rule, or `basic` for a very simplistic but faster method.
+#' @param maxiter Passed to the optimisation function, giving the maximum number
+#'  of iterations used for optimising the Likelihood.
 #'
 #' @return A tibble with the following columns:
 #' * `teststat` The value of the test statistic on the observed data
@@ -169,19 +185,19 @@ generate_bootsamp_unitfrech <- function(data, temp.cov, locations,
 #' }
 bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
                                 ms_models = c("powexp", "gauss", "brown"),
-                                sel_crit = "TIC", varmeth = "chain"){
+                                sel_crit = "TIC", varmeth = "chain",
+                                maxiter = 300){
 
   if(!(H0 %in% c("ED", "LS", "both"))) {
     stop("H0 must be one of 'ED', 'LS' or 'both'.")
   }
 
   d <- ncol(data)
-  nobs <- nrow(data)
 
   # generate bootstrap samples with unit frechet margins and dependence structure estimated from data
 
   X_star <- generate_bootsamp_unitfrech(data = data, temp.cov = temp.cov, locations = locations,
-                                        ms_models = ms_models, B = B, sel_crit = sel_crit)
+                                        ms_models = ms_models, B = B, sel_crit = sel_crit, maxiter = maxiter)
   covmod <- X_star$covmod
   parhat_ms <- X_star$parhat
   X_star <- X_star$X_star
@@ -190,7 +206,7 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 
     ## estimate parameters of GEV margins under homogeneity assumption
     pars_h0_hom <-  fit_local_scaling_gev(data = data, temp.cov = temp.cov, method = "BFGS",
-                                          maxiter = 300, returnRatios = FALSE, start_vals = NULL)$mle
+                                          maxiter = maxiter, returnRatios = FALSE, start_vals = NULL)$mle
 
     rownames(pars_h0_hom) <- c("mu0", "sigma0", "gamma0", "alpha0")
 
@@ -212,8 +228,10 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
     })
 
     results_sim_if <- purrr::map_dfr(X_star_if,  ~ compute_teststat(.x, temp.cov = temp.cov,
-                                                                    H0 = "LS", varmeth = varmeth))
-    results_if <- compute_teststat(data = data, temp.cov = temp.cov, H0 = "LS", varmeth = varmeth)
+                                                                    H0 = "LS", varmeth = varmeth,
+                                                                    maxiter = maxiter))
+    results_if <- compute_teststat(data = data, temp.cov = temp.cov, H0 = "LS", varmeth = varmeth,
+                                   maxiter = maxiter)
 
     tmp_if <- rank(c(results_if$p, results_sim_if$p), na.last = NA)
     p_corr_if <- as.vector(tmp_if[1]/length(tmp_if))
@@ -228,21 +246,20 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
   if(H0 %in% c("ED", "both")) {
     ## estimate GEV parameters on pooled sample
     pars_h0_ed <- fit_scalegev(data = data,
-                               temp.cov = temp.cov, hessian = FALSE)$mle
-    pars_h0_ed <- matrix(rep(pars_h0_ed, d), ncol = d)
-    rownames(pars_h0_ed) <- c("mu0", "sigma0", "gamma0", "alpha0")
+                               temp.cov = temp.cov, hessian = FALSE, maxiter = maxiter)$mle
+
+
+    expo <- exp(pars_h0_ed[4]/pars_h0_ed[1]*temp.cov)
+    loc <- pars_h0_ed[1]*expo
+    scale <- pars_h0_ed[2]*expo
 
     X_star_ed <- purrr::map(X_star, ~ {
 
       ## transform margins to GEV-distributions with estimated parameters satisfying H0
       for (i in 1:d){
-        expo <- exp(pars_h0_ed[4,i]/pars_h0_ed[1,i]*temp.cov)
-        loc <- pars_h0_ed[1,i]*expo
-        scale <- pars_h0_ed[2,i]*expo
-
         .x[,i] <- frech2gev(.x[,i], loc = loc,
                                      scale = scale,
-                                     shape = pars_h0_ed[3,i])
+                                     shape = pars_h0_ed[3])
       }
 
       #  x_star[NAMatrix] <- NA
@@ -251,9 +268,11 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 
     # Calculate test statistics for generated bootstrap data
     results_sim_ed <- purrr::map_dfr(X_star_ed,  ~ compute_teststat(.x, temp.cov = temp.cov,
-                                                                    H0 = "ED", varmeth = varmeth))
+                                                                    H0 = "ED", varmeth = varmeth,
+                                                                    maxiter = maxiter))
 
-    results_ed <- compute_teststat(data = data, temp.cov = temp.cov, H0 = "ED", varmeth = varmeth)
+    results_ed <- compute_teststat(data = data, temp.cov = temp.cov, H0 = "ED", varmeth = varmeth,
+                                   maxiter = maxiter)
 
     tmp_ed <- rank(c(results_ed$p, results_sim_ed$p), na.last = NA)
     p_corr_ed <- as.vector(tmp_ed[1]/length(tmp_ed))
@@ -290,6 +309,8 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 #' @param adj_method Method used for adjusting the p-values. Passed to \code{\link[stats]{p.adjust}}.
 #' @param set_start_vals Logical; whether to set the start values for the optimisation carried out on the bootstrap
 #' to the estimates obtained under H0 on input data
+#' @param maxiter Passed to the optimisation function, giving the maximum number
+#'  of iterations used for optimising the Likelihood.
 #'
 #' @inheritParams bootstrap_scalegev
 #'
@@ -329,7 +350,8 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 bootstrap_subsets_ms  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
                                 ms_models = c("powexp", "gauss", "brown"),
                                 sel_crit = "TIC", varmeth = "chain", subsets, return_boots = FALSE,
-                                adj_pvals = FALSE, adj_method = "BH", set_start_vals = FALSE){
+                                adj_pvals = FALSE, adj_method = "BH", set_start_vals = FALSE,
+                                maxiter = 300){
 
   if(!(H0 %in% c("ED", "LS", "both"))) {
     stop("H0 must be one of 'ED', 'LS' or 'both'.")
@@ -337,16 +359,14 @@ bootstrap_subsets_ms  <- function(data, temp.cov, locations,  B = 300, H0 = "ED"
   if(missing(subsets)) { stop("Please provide the subsets on which to perform the test.")}
 
   d <- ncol(data)
-  nobs <- nrow(data)
-
-
 
   if(is.null(colnames(data))) { colnames(data) <- 1:d}
 
   # generate bootstrap samples with unit frechet margins and dependence structure estimated from data
 
   X_star <- generate_bootsamp_unitfrech(data = data, temp.cov = temp.cov, locations = locations,
-                                        ms_models = ms_models, B = B, sel_crit = sel_crit)
+                                        ms_models = ms_models, B = B, sel_crit = sel_crit,
+                                        maxiter = maxiter)
 
   covmod <- X_star$covmod
   parhat_ms <- X_star$parhat
@@ -361,14 +381,15 @@ bootstrap_subsets_ms  <- function(data, temp.cov, locations,  B = 300, H0 = "ED"
       j.cols <-  subsets[[j]]
       n.jcols <- length(j.cols)
       # observations belonging to current subset
-      data.j <- data[, colnames(data) %in% j.cols]
+      cols.tmp <- (colnames(data) %in% j.cols)
+      data.j <- data[, cols.tmp]
 
       ## estimate GEV parameters on pooled sample consisting of current data
       pars_h0_ed <- fit_scalegev(data = data.j,
-                                 temp.cov = temp.cov)$mle
+                                 temp.cov = temp.cov, maxiter = maxiter)$mle
 
       # get columns of bootstrap samples corresponding to current subset
-      X_star_ed <- purrr::map(X_star, ~ { .x[ , (colnames(data) %in% j.cols)]})
+      X_star_ed <- purrr::map(X_star, ~ { .x[ , cols.tmp]})
 
       # H0 parameter estimates of current subset
       expo <- exp(pars_h0_ed[4]/pars_h0_ed[1]*temp.cov)
@@ -398,20 +419,17 @@ bootstrap_subsets_ms  <- function(data, temp.cov, locations,  B = 300, H0 = "ED"
       }
       # Calculate test statistics for generated bootstrap data
       results_sim_ed <- purrr::map_dfr(X_star_ed,  ~ compute_teststat(.x, temp.cov = temp.cov,
-                                                                      H0 = "ED", varmeth = varmeth, start_vals = start_vals_ed))
+                                                                      H0 = "ED", varmeth = varmeth,
+                                                                      start_vals = start_vals_ed,
+                                                                      maxiter = maxiter))
 
-
-      # results_sim_if <- purrr::map_dfr(X_star_if,  ~ compute_teststat(.x, temp.cov = temp.cov,
-      #                                                                 equal_distr = FALSE))
       results_ed <- compute_teststat(data = data.j, temp.cov = temp.cov,
-                                     H0 = "ED", varmeth = varmeth)
-      #results_if <- compute_teststat(data = data.j, temp.cov = temp.cov, equal_distr = FALSE)
+                                     H0 = "ED", varmeth = varmeth, maxiter = maxiter)
+
 
       tmp_ed <- rank(c(results_ed$p, results_sim_ed$p), na.last = NA)
       p_corr_ed <- as.vector((tmp_ed[1]-1)/length(tmp_ed))
 
-      # tmp_if <- rank(c(results_if$p, results_sim_if$p), na.last = NA)
-      # p_corr_if <- as.vector((tmp_if[1]-1)/length(tmp_if))
 
       if(return_boots) {
         res <- res %>% dplyr::bind_rows(
@@ -437,15 +455,16 @@ bootstrap_subsets_ms  <- function(data, temp.cov, locations,  B = 300, H0 = "ED"
 
       j.cols <-  subsets[[j]]
       n.jcols <- length(j.cols)
+      cols.tmp <- (colnames(data) %in% j.cols)
       # observations belonging to current subset
-      data.j <- data[, colnames(data) %in% j.cols]
+      data.j <- data[, cols.tmp]
 
 
       ## estimate parameters of GEV margins under homogeneity assumption
       pars_h0_hom <-  fit_local_scaling_gev(data = data.j, temp.cov = temp.cov, method = "BFGS",
-                                            maxiter = 300, returnRatios = FALSE, start_vals = NULL)$mle
+                                            maxiter = maxiter, returnRatios = FALSE, start_vals = NULL)$mle
       # get columns of bootstrap samples corresponding to current subset
-      X_star_ed <- purrr::map(X_star, ~ { .x[ , (colnames(data) %in% j.cols)]})
+      X_star_ed <- purrr::map(X_star, ~ { .x[ , cols.tmp]})
 
 
       X_star_if <- purrr::map(X_star, ~ {
@@ -467,11 +486,13 @@ bootstrap_subsets_ms  <- function(data, temp.cov, locations,  B = 300, H0 = "ED"
 
       # Calculate test statistics for generated bootstrap data
       results_sim_if <- purrr::map_dfr(X_star_if,  ~ compute_teststat(.x, temp.cov = temp.cov,
-                                                                      H0 = "LS", varmeth = varmeth, start_vals = NULL))
+                                                                      H0 = "LS", varmeth = varmeth,
+                                                                      start_vals = NULL,
+                                                                      maxiter = maxiter))
 
 
       results_if <- compute_teststat(data = data.j, temp.cov = temp.cov,
-                                     H0 = "LS", varmeth = varmeth)
+                                     H0 = "LS", varmeth = varmeth, maxiter = maxiter)
 
       tmp_if <- rank(c(results_if$p, results_sim_if$p), na.last = NA)
       p_corr_if <- as.vector((tmp_if[1]-1)/length(tmp_if))

@@ -12,7 +12,8 @@ bootstrap_scalegev(
   H0 = "ED",
   ms_models = c("powexp", "gauss", "brown"),
   sel_crit = "TIC",
-  varmeth = "chain"
+  varmeth = "chain",
+  maxiter = 300
 )
 }
 \arguments{
@@ -38,6 +39,9 @@ The i-th row corresponds to the data contained in the i-th column of the data ma
 \code{\link[findpoolreg]{fit_spat_scalegev}}.
 Can be either \code{chain} (the default) for an estimator based
 on the multivariate chain rule, or \code{basic} for a very simplistic but faster method.}
+
+\item{maxiter}{Passed to the optimisation function, giving the maximum number
+of iterations used for optimising the Likelihood.}
 }
 \value{
 A tibble with the following columns:

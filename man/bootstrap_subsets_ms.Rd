@@ -17,7 +17,8 @@ bootstrap_subsets_ms(
   return_boots = FALSE,
   adj_pvals = FALSE,
   adj_method = "BH",
-  set_start_vals = FALSE
+  set_start_vals = FALSE,
+  maxiter = 300
 )
 }
 \arguments{
@@ -55,6 +56,9 @@ on the multivariate chain rule, or \code{basic} for a very simplistic but faster
 
 \item{set_start_vals}{Logical; whether to set the start values for the optimisation carried out on the bootstrap
 to the estimates obtained under H0 on input data}
+
+\item{maxiter}{Passed to the optimisation function, giving the maximum number
+of iterations used for optimising the Likelihood.}
 }
 \value{
 A tibble with the following columns:

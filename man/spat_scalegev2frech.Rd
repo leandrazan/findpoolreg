@@ -4,7 +4,7 @@
 \alias{spat_scalegev2frech}
 \title{Transform scale-GEV margins to unit Frechet margins for multivariate data}
 \usage{
-spat_scalegev2frech(data, temp.cov, par = NULL)
+spat_scalegev2frech(data, temp.cov, par = NULL, maxiter = 300)
 }
 \arguments{
 \item{data}{Numeric matrix of observations. Each column corresponds to one station.}
@@ -14,6 +14,9 @@ spat_scalegev2frech(data, temp.cov, par = NULL)
 \item{par}{Either \code{NULL} (the default) or a \eqn{4 \times ncol(data)} matrix containing the location, scale, shape and
 trend parameters of the scale-GEV model of each column of the data. If \code{NULL}, the parameters are estimated stationwise with
 maximum likelihood.}
+
+\item{maxiter}{Only relevant when \code{par = NULL}; passed to the optimisation
+function, giving the maximum number of iterations used for optimising.}
 }
 \value{
 A matrix of same dimension as input data.

@@ -1,21 +1,22 @@
 
 generate_bootsamp_unitfrech_bivdens <- function(data, temp.cov, locations,
-                                        biv_models = c( "log", "alog", "hr"), B = 500) {
+                                        biv_models = c( "log", "alog", "hr"), B = 500, maxiter = 300) {
 
   if(!all(biv_models %in% c( "log", "alog", "hr", "neglog", "aneglog", "bilog",
                             "negbilog", "ct","amix"))) {
-    stop("Bivariate extreme value distributions can be \n
+    stop(" `biv_models` must be a subset of \n
    'log', 'alog', 'hr', 'neglog', 'aneglog', 'bilog',
                                                         'negbilog', 'ct','amix').")
   }
 
+  n.dat <- nrow(data)
 
   ## transform margins to unit Frechet based on local GEV parameters
-  unitfrech <- spat_scalegev2frech(data = data, temp.cov = temp.cov)
+  unitfrech <- spat_scalegev2frech(data = data, temp.cov = temp.cov, maxiter = maxiter)
 
   ## Fit max-stable processes using models specified in ms_models (margins are unit Frechet)
   fitted_biv <- list()
-  for( biv.mod in biv_models) {
+  for(biv.mod in biv_models) {
     fit.tmp <-  tryCatch(
      evd::fbvevd(unitfrech, model = biv.mod, loc1 = 1, loc2 = 1, scale1 = 1, scale2 = 1, shape1 = 1, shape2 = 1, std.err = FALSE),
       error = function(a) {list(estimate  =  NA)} )
@@ -29,6 +30,7 @@ generate_bootsamp_unitfrech_bivdens <- function(data, temp.cov, locations,
 
   model.sel <- which.min(sel.vals)
 
+  if(is.na(model.sel)) {stop("None of the fitted bivariate models has a valid AIC.")}
   # chosen fitted max-stable model
   fitted <- fitted_biv[[model.sel]]
 
@@ -44,7 +46,7 @@ generate_bootsamp_unitfrech_bivdens <- function(data, temp.cov, locations,
     # sim data
     X_star <- replicate(B, {
       ## simulate max stable process with estimated parameters, margins are unit frechet
-      x_star <- evd::rbvevd(nrow(data), dep = parhat, model = biv.mod, mar1 = c(1,1,1), mar2 = c(1,1,1))
+      x_star <- evd::rbvevd(n.dat, dep = parhat, model = biv.mod, mar1 = c(1,1,1), mar2 = c(1,1,1))
       x_star}, simplify = FALSE)
 
   }
@@ -53,7 +55,7 @@ generate_bootsamp_unitfrech_bivdens <- function(data, temp.cov, locations,
     # sim data
     X_star <- replicate(B, {
       ## simulate max stable process with estimated parameters, margins are unit frechet
-      x_star <- evd::rbvevd(nrow(data), dep = parhat[3], asy = parhat[1:2], model = biv.mod, mar1 = c(1,1,1), mar2 = c(1,1,1))
+      x_star <- evd::rbvevd(n.dat, dep = parhat[3], asy = parhat[1:2], model = biv.mod, mar1 = c(1,1,1), mar2 = c(1,1,1))
       x_star}, simplify = FALSE)
   }
   else  {
@@ -61,7 +63,7 @@ generate_bootsamp_unitfrech_bivdens <- function(data, temp.cov, locations,
     # sim data
     X_star <- replicate(B, {
       ## simulate max stable process with estimated parameters, margins are unit frechet
-      x_star <- evd::rbvevd(nrow(data), alpha = parhat[1], beta = parhat[2], model = biv.mod, mar1 = c(1,1,1), mar2 = c(1,1,1))
+      x_star <- evd::rbvevd(n.dat, alpha = parhat[1], beta = parhat[2], model = biv.mod, mar1 = c(1,1,1), mar2 = c(1,1,1))
       x_star}, simplify = FALSE)
 
   }
@@ -73,20 +75,22 @@ generate_bootsamp_unitfrech_bivdens <- function(data, temp.cov, locations,
 
 bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
                                         biv_models = c( "log", "alog", "hr"),
-                                        varmeth = "chain", return_boots = FALSE, set_start_vals = TRUE){
+                                        varmeth = "chain", return_boots = FALSE, set_start_vals = TRUE,
+                                        maxiter = 300){
 
   if(!(H0 %in% c("ED", "LS", "both"))) {
     stop("H0 must be one of 'ED', 'LS' or 'both'.")
   }
 
   d <- ncol(data)
+  if(!(d == 2)) { stop("Data must have 2 columns.")}
   nobs <- nrow(data)
 
 
   # generate bootstrap samples with unit frechet margins and dependence structure estimated from data
 
   X_star <- generate_bootsamp_unitfrech_bivdens(data = data, temp.cov = temp.cov,
-                                        biv_models = biv_models, B = B)
+                                        biv_models = biv_models, B = B, maxiter = maxiter)
   covmod <- X_star$bivmod
   parhat_biv <- X_star$parhat
   X_star <- X_star$X_star
@@ -123,7 +127,7 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
     tmp_if <- rank(c(results_if$p, results_sim_if$p), na.last = NA)
     p_corr_if <- as.vector(tmp_if[1]/length(tmp_if))
 
-    tibif <- dplyr::as_tibble(results_if )  %>%
+    tibif <- dplyr::as_tibble(results_if)  %>%
       dplyr::mutate(p_boot = p_corr_if, bootstrap.B = B, Model_Sel = covmod,
                     biv_pars = parhat_biv,
                     par_h0 = list(pars_h0_hom), H0 = "LS")
@@ -133,7 +137,7 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
   if(H0 %in% c("ED", "both")) {
     ## estimate GEV parameters on pooled sample
     pars_h0_ed <- fit_scalegev(data = data,
-                               temp.cov = temp.cov, hessian = FALSE)$mle
+                               temp.cov = temp.cov, hessian = FALSE, maxiter = maxiter)$mle
 
 
 
@@ -216,6 +220,8 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
 #' @param set_start_vals logical; whether to use parameter estimates obtained with constraint of
 #' the null-hypothesis as starting values for optimisation on bootstrap samples.
 #' If `FALSE` (default and recommended), standard routine with trend parameter set to 0 will be used.
+#' @param maxiter Passed to the optimisation function, giving the maximum number
+#'  of iterations used for optimising the Likelihood.
 #'
 #' @return  A tibble with the following columns:
 #' * `teststat` The value of the test statistic on the observed data
@@ -243,7 +249,8 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
 bootstrap_pairs_biv <- function(data, temp.cov, B = 300, H0 = "ED",
                                     biv_models = c( "log", "alog", "hr"),
                                     varmeth = "chain", loi = NULL, pairs = NULL,
-                                    return_boots = FALSE, set_start_vals = FALSE) {
+                                    return_boots = FALSE, set_start_vals = FALSE,
+                                maxiter = 300) {
 
   if(is.null(pairs)) {
     if(is.null(loi)) {
@@ -264,7 +271,8 @@ bootstrap_pairs_biv <- function(data, temp.cov, B = 300, H0 = "ED",
     data.tmp <- data[, pair.tmp]
 
     boot.tmp <- bootstrap_onepair_bivmod(data = data.tmp, temp.cov = temp.cov, B = B, H0 = H0,
-                                          biv_models = biv_models, return_boots = return_boots, set_start_vals = set_start_vals)
+                                          biv_models = biv_models, return_boots = return_boots,
+                                         set_start_vals = set_start_vals, maxiter = maxiter)
 
     bootres <- bootres %>%
       dplyr::bind_rows(boot.tmp %>%

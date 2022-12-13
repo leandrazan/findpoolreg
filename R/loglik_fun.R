@@ -106,7 +106,7 @@ fit_scalegev <- function(data, temp.cov, method = "BFGS", maxiter = 300,
                  method = method, control = list(maxit = maxiter),
                  hessian = hessian)
 
-  if(!(mlest$convergence == 0) ){print("Optimization didn't succeed.")}
+  if(!(mlest$convergence == 0) ){ print("Optimization (GEV) might not have succeeded.")}
 
   if(!hessian) {
     return(list(mle = mlest$par, nll = mlest$value, conv = mlest$convergence))

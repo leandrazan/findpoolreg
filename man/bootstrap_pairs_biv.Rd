@@ -14,7 +14,8 @@ bootstrap_pairs_biv(
   loi = NULL,
   pairs = NULL,
   return_boots = FALSE,
-  set_start_vals = FALSE
+  set_start_vals = FALSE,
+  maxiter = 300
 )
 }
 \arguments{
@@ -46,6 +47,9 @@ on the multivariate chain rule, or \code{basic} for a very simplistic but faster
 \item{set_start_vals}{logical; whether to use parameter estimates obtained with constraint of
 the null-hypothesis as starting values for optimisation on bootstrap samples.
 If \code{FALSE} (default and recommended), standard routine with trend parameter set to 0 will be used.}
+
+\item{maxiter}{Passed to the optimisation function, giving the maximum number
+of iterations used for optimising the Likelihood.}
 }
 \value{
 A tibble with the following columns:
