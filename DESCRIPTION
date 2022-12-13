@@ -4,8 +4,9 @@ Title: Find pooling region for precipitation extremes
 Version: 0.1.0
 Author: Leandra Zanger
 Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: This package provides a parametric bootstrap procedure that allows
+    to test whether a set of locations is homogeneous w.r.t. their GEV
+    distribution of precipitation extremes.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
