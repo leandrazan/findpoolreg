@@ -197,7 +197,7 @@ get_regionwise_estimates <- function(data, coords, temp.cov, ref_gmst, B, r = NU
   }
 
   if(!is.null(T.year)) {
-    rl_reg <- quantile(maxis, p = 1-1/T.year)
+    rl_reg <- stats::quantile(maxis, p = 1-1/T.year)
     names(rl_reg) <- paste("T =", T.year)
     list_ecdf <- append(list_ecdf, list(rl_reg = rl_reg))
   }

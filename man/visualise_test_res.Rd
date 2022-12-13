@@ -19,8 +19,8 @@ visualise_test_res(
 \item{coord_grid}{A dataframe containing the grid coordinates in the columns \verb{from_lon,to_lon, from_lat, to_lat}.
 Can also contain the grid centers through columns \code{meanlon}, \code{meanlat}.}
 
-\item{testres}{Result of bootstrap test as obtained from  \code{\link[findpoolreg]{bootstrap_scalegev_subsets}} or
-\code{\link[findpoolreg]{bootstrap_pairs_bivmod}}.}
+\item{testres}{Result of bootstrap test as obtained from  \code{\link[findpoolreg]{bootstrap_subsets_ms}} or
+\code{\link[findpoolreg]{bootstrap_pairs_biv}}.}
 
 \item{method}{The method used for adjusting p-values. Must be one of \code{holm} (for the Holm stepdown procedure),
 \code{BY} (for the Benjamini Yekutieli stepup procedure), \code{BH} (for the Benjamini Hochberg step-up procedure) or
@@ -65,7 +65,7 @@ simdat <- generateData(n = 100, d = 9,
                        seed = 1, locations = meancoords, temp.cov =  cvrt)
 
 subsets <- purrr::map(c(1:4, 6:9), ~ c(5, .x))
-bootres <- bootstrap_scalegev_subsets(data = simdat, temp.cov = cvrt, locations = meancoords,
+bootres <- bootstrap_subsets_ms(data = simdat, temp.cov = cvrt, locations = meancoords,
  subsets = subsets, B = 100)
 
 visualise_test_res(coord_grid = coord_grid, testres = bootres,

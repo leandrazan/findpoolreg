@@ -237,10 +237,10 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
 #' cvrt <- (1:100)/100
 #' coords <- matrix(20*abs(stats::rnorm(4*2)), ncol = 2)
 #' x <- generateData(seed = 2, n = 100, temp.cov = cvrt, d= 4, locations = coords)
-#' bootres <- bootstrap_pairs_bivmod(data = x, temp.cov = cvrt, varmeth = "chain", B = 200, loi = 3)
+#' bootres <- bootstrap_pairs_biv(data = x, temp.cov = cvrt, varmeth = "chain", B = 200, loi = 3)
 #' bootres
 #' }
-bootstrap_pairs_bivmod <- function(data, temp.cov, B = 300, H0 = "ED",
+bootstrap_pairs_biv <- function(data, temp.cov, B = 300, H0 = "ED",
                                     biv_models = c( "log", "alog", "hr"),
                                     varmeth = "chain", loi = NULL, pairs = NULL,
                                     return_boots = FALSE, set_start_vals = FALSE) {

@@ -1,7 +1,7 @@
 #' Generate bootstrap samples with dependence structure from data and unit frechet margins
 #'
 #' This function transform margins to unit Frechet, fits several max-stable models to
-#' the transformed data and chooses the best fit. Then ootstrap samples from this fitted max-stable model
+#' the transformed data and chooses the best fit. Then bootstrap samples from this fitted max-stable model
 #' are generated.
 #'
 #' @param data Numeric matrix of observations. Each column corresponds to one station.
@@ -321,12 +321,12 @@ bootstrap_scalegev  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
 #'                  shape = rep(0.1, 6), alpha = rep(2,6))
 #'
 #' sbsts <- list( c(1,2), c(1,3), c(1,4), c(1,5), c(1,6))
-#' bootres <- bootstrap_scalegev_subsets(data = x, temp.cov = cvrt,
+#' bootres <- bootstrap_subsets_ms(data = x, temp.cov = cvrt,
 #'              locations = coords, varmeth = "chain", B = 200, subsets = sbsts,
 #'              adj_pvals = TRUE)
 #' bootres # H0 ist rejected at 5%-level for the deviating stations 5 and 6
 #' }
-bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
+bootstrap_subsets_ms  <- function(data, temp.cov, locations,  B = 300, H0 = "ED",
                                 ms_models = c("powexp", "gauss", "brown"),
                                 sel_crit = "TIC", varmeth = "chain", subsets, return_boots = FALSE,
                                 adj_pvals = FALSE, adj_method = "BH", set_start_vals = FALSE){
@@ -535,7 +535,7 @@ bootstrap_scalegev_subsets  <- function(data, temp.cov, locations,  B = 300, H0 
 #' alpha = rep(2,6))
 #'
 #' sbsts <- list( c(1,2), c(1,3), c(1,4), c(1,5), c(1,6))
-#' bootres <- bootstrap_scalegev_subsets(data = x, temp.cov = cvrt,
+#' bootres <- bootstrap_subsets_ms(data = x, temp.cov = cvrt,
 #'              locations = coords, varmeth = "chain", B = 200, subsets = sbsts)
 #' get_adj_pvals(bootres) # H0 ist rejected at 5%-level for the deviating stations 5 and 6
 #' }

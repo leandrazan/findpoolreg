@@ -292,7 +292,7 @@ compute_cov_pooled <- function(dat, par, temp.cov, hessmat) {
 
   score_sums <- apply(scores, c(1,2), sum)
 
-  cov_score_sums <- var(t(score_sums), na.rm = TRUE)
+  cov_score_sums <- stats::var(t(score_sums), na.rm = TRUE)
 
   Bs <- Bmat(par, temp.cov = temp.cov)
   Ts <- Tsigma_inv(par, temp.cov = temp.cov)
@@ -309,7 +309,7 @@ compute_cov_pooled <- function(dat, par, temp.cov, hessmat) {
 
 
 compute_ci_rl <- function(rlhat, rl_var, level = .05) {
-  quant_norm <- qnorm(1-level/2)
+  quant_norm <- stats::qnorm(1-level/2)
 
   c("lower" = rlhat - quant_norm*sqrt(rl_var), "upper" = rlhat + quant_norm*sqrt(rl_var))
 }

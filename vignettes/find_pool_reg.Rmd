@@ -87,12 +87,12 @@ grid_centers <- as.matrix(example_grid[ , c("meanlon", "meanlat")])
 ```
 
 
-Now we are ready to the function $\texttt{bootstrap_scalegev_subsets}$, which is the one 
+Now we are ready to the function $\texttt{bootstrap_subsets_ms}$, which is the one 
 that performs the max-stable-process-based bootstrap procedure.
 
 ```{r}
 set.seed(1)
-bootres <- bootstrap_scalegev_subsets(data = example_data, temp.cov = cvrt,
+bootres <- bootstrap_subsets_ms(data = example_data, temp.cov = cvrt,
                                       locations = grid_centers, subsets = subsets, B = 500)
 bootres
 ```
@@ -115,13 +115,13 @@ visualise_test_res(coord_grid = example_grid, testres = bootres, method = "BH",
 
 Perfect, the test detects all deviations from the null-hypothesis.
 We can also perform the boostrap based on bivariate extreme value distributions. 
-For this, we apply the function $\texttt{bootstrap_pairs_bivmod}$ to the pairs defined above, or we 
+For this, we apply the function $\texttt{bootstrap_pairs_biv}$ to the pairs defined above, or we 
 just supply the location of primary interest, which is 5 in our case, and then all pairs will be tested
 automatically.
 
 ```{r}
 set.seed(1)
-boot_biv <- bootstrap_pairs_bivmod(data = example_data, temp.cov = cvrt, loi = 5, B = 300)
+boot_biv <- bootstrap_pairs_biv(data = example_data, temp.cov = cvrt, loi = 5, B = 300)
 boot_biv <- get_adj_pvals(boot_biv)
 boot_biv
 ```
