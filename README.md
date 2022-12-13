@@ -135,7 +135,7 @@ head(example_grid)
 grid_centers <- as.matrix(example_grid[ , c("meanlon", "meanlat")])
 ```
 
-Now we are ready to the function `bootstrap_scalegev_subsets`, which is
+Now we are ready to the function `bootstrap_subsets_ms`, which is
 the one that performs the max-stable-process-based bootstrap procedure.
 The bootstrap procedure based on bivariate extreme value distributions is
 implemented in the funciton `bootstrap_pairs_biv`. 
@@ -145,7 +145,7 @@ method is restricted to testing pairs.
 
 ``` r
 set.seed(1)
-bootres <- bootstrap_scalegev_subsets(data = example_data, temp.cov = cvrt,
+bootres <- bootstrap_subsets_ms(data = example_data, temp.cov = cvrt,
                                       locations = grid_centers, subsets = subsets, B = 500)
 bootres
 #> # A tibble: 8 x 10
