@@ -9,7 +9,8 @@ compute_teststat(
   temp.cov,
   H0 = "ED",
   varmeth = "chain",
-  start_vals = NULL
+  start_vals = NULL,
+  maxiter = 300
 )
 }
 \arguments{
@@ -25,6 +26,9 @@ on the multivariate chain rule, or \code{basic} for a very simplistic but faster
 \link[findpoolreg]{fit_spat_scalegev}.}
 
 \item{start_vals}{Optional: matrix containing start values for the ML optimisation.}
+
+\item{maxiter}{Passed to the optimisation function, giving the maximum number
+of iterations used for optimising the Likelihood.}
 }
 \value{
 A data frame with columns
