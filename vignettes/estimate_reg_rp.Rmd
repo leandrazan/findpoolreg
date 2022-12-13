@@ -2,7 +2,7 @@
 title: "Estimate regionwise Return Periods/Levels"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{estimate_reg_rp}
+  %\VignetteIndexEntry{Estimate regionwise RP/RL}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
