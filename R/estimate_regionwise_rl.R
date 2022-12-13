@@ -147,8 +147,10 @@ get_gev_par <- function(parvec, cvrt) {
 #' coords <- matrix(20*abs(stats::rnorm(d*2)), ncol = 2)
 #'
 #'  xx <- generateData(locations = coords, d = 10, seed = 2)
+#'
+#' ## better use a larger value of B than done here in applications!
 #' get_regionwise_estimates(data = xx, coords = coords, temp.cov = (1:100)/100,
-#'     ref_gmst = 0.9, B = 10000, T.year = 100, r = 65)
+#'     ref_gmst = 0.9, B = 5000, T.year = 100, r = 65)
 get_regionwise_estimates <- function(data, coords, temp.cov, ref_gmst, B, r = NULL, T.year = NULL,
                                      ms_models = c("gauss", "brown", "whitmat", "powexp"),
                                      return_ecdf = TRUE, start = 0) {

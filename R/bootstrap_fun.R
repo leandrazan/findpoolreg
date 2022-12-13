@@ -526,7 +526,7 @@ bootstrap_subsets_ms  <- function(data, temp.cov, locations,  B = 300, H0 = "ED"
   }
 
   if(all(purrr::map_dbl(subsets, ~ length(.x)) == 2)) {
-    res <- res %>% tidyr::unnest(cols = sbst)
+    res <- res %>% tidyr::unnest(cols = .data$sbst)
   }
   res
 

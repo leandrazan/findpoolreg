@@ -17,7 +17,7 @@
 #' for the plot size can be given.
 #' @return A leaflet plot.
 #' @export
-#'
+#' @importFrom rlang .data
 #' @examples
 #'
 #' \dontrun{
@@ -60,14 +60,14 @@ visualise_test_res <- function(coord_grid, testres, method = "holm", plot_type =
   if(is.null(loi)) { d.loi <- 1 }
 
   if(!("meanlon" %in% colnames(coord_grid))) {
-   coord_grid <- coord_grid %>% dplyr::mutate(meanlon = (from_lon + to_lon)/2,
-     meanlat = (from_lat + to_lat)/2)
+   coord_grid <- coord_grid %>% dplyr::mutate(meanlon = (.data$from_lon + .data$to_lon)/2,
+     meanlat = (.data$from_lat + .data$to_lat)/2)
   }
 
   testres <- get_adj_pvals(testres, methods = method, rejection = FALSE)
 
   if( "sbst" %in% colnames(testres)) {
-    testres  <- testres %>% tidyr::unnest(cols = sbst)
+    testres  <- testres %>% tidyr::unnest(cols = .data$sbst)
   }
   testres <- testres %>% dplyr::rename("Region" = paste0("X", d.loi + 1))
 
@@ -77,12 +77,12 @@ visualise_test_res <- function(coord_grid, testres, method = "holm", plot_type =
 
   testres <- testres %>% dplyr::rename( "padj" = dplyr::starts_with(paste0("p_", method), ignore.case = TRUE))
 
-  testres <- testres %>% dplyr::mutate(fillop = ifelse(padj <= 0.1, 0.7, 0.5))
+  testres <- testres %>% dplyr::mutate(fillop = ifelse(.data$padj <= 0.1, 0.7, 0.5))
 
   if(plot_type == "rejection") {
 
 
-   testres <- testres %>% dplyr::mutate(reject = (padj <= level))
+   testres <- testres %>% dplyr::mutate(reject = (.data$padj <= level))
 
 
    bb <- coord_grid %>% dplyr::left_join(testres, by = "Region")
