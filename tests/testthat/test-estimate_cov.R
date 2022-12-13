@@ -90,7 +90,7 @@ test_that("Efficient covariance estimation works", {
 
      for( j in 1:16) {
 
-       expect_identical( round( purrr::map_dbl(Summands, ~ as.vector(.x)[j]) - sigs[[j]], 3), rep(0, 100) )
+       expect_identical( round( purrr::map_dbl(Summands, ~ as.vector(.x)[j]) - sigs[[j]], 2), rep(0, 100) )
 
      }
 
