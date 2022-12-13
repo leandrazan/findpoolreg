@@ -39,3 +39,34 @@ cvrt <- (findpoolreg::GMST %>% dplyr::filter(Year >= 1947, Year <= 2021))$smooth
 head(example_grid)
 grid_centers <- as.matrix(example_grid[ , c("meanlon", "meanlat")])
 
+## -------------------------------------------------------------------------------------------------------------------------------------------
+set.seed(1)
+bootres <- bootstrap_subsets_ms(data = example_data, temp.cov = cvrt,
+                                      locations = grid_centers, subsets = subsets, B = 500)
+bootres
+
+## -------------------------------------------------------------------------------------------------------------------------------------------
+bootres <- get_adj_pvals(bootres, methods = c("BH", "BY"))
+bootres %>% dplyr::arrange(p_boot)
+
+## -------------------------------------------------------------------------------------------------------------------------------------------
+visualise_test_res(coord_grid = example_grid, testres = bootres, method = "BH",
+                   plot_type = "pvals", level = 0.1, Zoom = 2, position = "topright",
+                   width = 800, height = 400)
+
+## -------------------------------------------------------------------------------------------------------------------------------------------
+set.seed(1)
+boot_biv <- bootstrap_pairs_biv(data = example_data, temp.cov = cvrt, loi = 5, B = 300)
+boot_biv <- get_adj_pvals(boot_biv)
+boot_biv
+
+## -------------------------------------------------------------------------------------------------------------------------------------------
+visualise_test_res(coord_grid = example_grid, testres = boot_biv, method = "boot",
+                   plot_type = "pvals", level = 0.1, Zoom = 2, position = "topright",
+                   width = 800, height = 400)
+
+## -------------------------------------------------------------------------------------------------------------------------------------------
+visualise_test_res(coord_grid = example_grid, testres = boot_biv, method = "holm",
+                   plot_type = "pvals", level = 0.1, Zoom = 2, position = "topright",
+                   width = 800, height = 400)
+
