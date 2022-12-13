@@ -19,9 +19,10 @@ fit_local_scaling_gev(
 \item{temp.cov}{Values of the temporal covariate of the scale-GEV-model.
 Must be of same record length as thr observations.}
 
-\item{method}{Method passed to \code{\link[stats:optim]{stats::optim()}}.}
+\item{method}{Method passed to \code{\link[stats]{optim}}.}
 
-\item{maxiter}{Maximum number of iterations during maximisation (also passed to \code{\link[stats:optim]{stats::optim()}}).}
+\item{maxiter}{Maximum number of iterations during maximisation (also passed to
+\code{\link[stats]{optim}}).}
 
 \item{returnRatios}{logical: when TRUE, location-scale- and trend-location-parameter ratios are returned,
 when FALSE, the plain parameters are returned.}

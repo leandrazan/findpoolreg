@@ -58,8 +58,9 @@ nll_scalegev <- function(params, data, temp.cov){
 #' such that only one set of parameters is computed.
 #' @param temp.cov Values of the temporal covariate of the scale-GEV-model.
 #' Must be of same record length as thr observations.
-#' @param method Method passed to [stats::optim()].
-#' @param maxiter Maximum number of iterations during maximisation (also passed to [stats::optim()]).
+#' @param method Method passed to \code{\link[stats]{optim}}.
+#' @param maxiter Maximum number of iterations during maximisation (also passed to
+#' \code{\link[stats]{optim}}).
 #' @param hessian logical; whether to return the numerically differentiated Hessian matrix.
 #' @param printStartVals logical; whether to print start values of optimisation.
 #' @param start_val Optional: vector containing start values for the ML optimisation.
@@ -67,7 +68,7 @@ nll_scalegev <- function(params, data, temp.cov){
 #' @return A list containing the components
 #' * mle: Estimated parameter values
 #' * nll : Value of the negative log-likelihood evaluated at the optimised parameters
-#' * conv : convergence code from [stats::optim()] (0 means successful convergence)
+#' * conv : convergence code from \code{\link[stats]{optim}} (0 means successful convergence)
 #' * hessian: The numerically differentiated Hessian matrix (when hessian was TRUE)
 #' @export
 #'
@@ -200,8 +201,9 @@ nll_scalegev_hom <- function(params, data, temp.cov){
 #' @param data A matrix or dataframe representing the data, where each column corresponds to one site.
 #' @param temp.cov Values of the temporal covariate of the scale-GEV-model.
 #' Must be of same record length as thr observations.
-#' @param method  Method passed to [stats::optim()].
-#' @param maxiter Maximum number of iterations during maximisation (also passed to [stats::optim()]).
+#' @param method  Method passed to \code{\link[stats]{optim}}.
+#' @param maxiter Maximum number of iterations during maximisation (also passed to
+#' \code{\link[stats]{optim}}).
 #' @param varmeth Method for estimation of variance-covariance matrix. Can be either `chain` (the default) for an estimator based
 #' on the multivariate chain rule, or `basic` for a very simplistic but faster method.
 #' @param start_vals Optional: matrix containing start values for the ML optimisation.
@@ -355,8 +357,9 @@ grad_ll_scalegev <- function(data, params, temp.cov) {
 #' @param data A matrix or dataframe representing the data, where each column corresponds to one site.
 #' @param temp.cov Values of the temporal covariate of the scale-GEV-model.
 #' Must be of same record length as thr observations.
-#' @param method  Method passed to [stats::optim()].
-#' @param maxiter Maximum number of iterations during maximisation (also passed to [stats::optim()]).
+#' @param method  Method passed to \code{\link[stats]{optim}}.
+#' @param maxiter Maximum number of iterations during maximisation (also passed to
+#' \code{\link[stats]{optim}}).
 #' @param returnRatios logical: when TRUE, location-scale- and trend-location-parameter ratios are returned,
 #' when FALSE, the plain parameters are returned.
 #' @param start_vals Optional: matrix containing start values for the ML optimisation.

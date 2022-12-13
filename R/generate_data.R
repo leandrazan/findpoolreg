@@ -15,7 +15,7 @@
 #' @param temp.cov A vector of length \eqn{n} giving the temporal covariate.
 #' @param MSparam A named list containing the parameters for the max-stable process. For `gauss`, these must
 #' be `cov11, cov12, cov22`, for the other models these are `range, smooth`. For further details,
-#' see \link[SpatialExtremes]{rmaxstab}.
+#' see \code{\link[SpatialExtremes]{rmaxstab}}.
 #' @param seed This seed is set for reproducibility.
 #'
 #' @return A \eqn{n \times d} matrix containing containing the data.

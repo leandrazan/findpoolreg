@@ -1,6 +1,8 @@
 
 # computes \dot \ell_{(0, 1, \gamma)}(( x- mut)/sigmat)
-#' Computes three dimensional score function of data with margins transformed to standard GEV
+
+#' Computes three dimensional score function of data with margins transformed to
+#' standard GEV
 #'
 #' @param x Numeric vector of observations from the scale-GEV-model
 #' @param theta Parameter vector of the scale-GEV-model
@@ -8,8 +10,7 @@
 #' @param rel_par Logical; whether `theta` contains the plain parameters \eqn{\mu, \sigma, \gamma, \alpha},
 #' or relative values \eqn{\mu, \mu/\sigma, \gamma, \alpha/\mu}.
 #'
-#' @return A matrix of dimension \eqn{3\times} `length(x)` containing the values of
-#' \deqn{ \dot\ell_{(0,1, \gamma)} ( \frac{ x - \mu(gmst(t))}{\sigma(gmst(t))} ).}
+#' @return A matrix of dimension  `3 x length(x)`.
 #' @export
 #'
 #' @examples
@@ -71,20 +72,14 @@ score_standard_univ <- function(x, theta, temp.cov = NULL, rel_par = FALSE) {
 #' Computes cross-covariance matrix of score function applied to columns of
 #' data transformed to standard GEV distribution
 #'
-#' The empirical covariance matrices of
-#' \deqn{ (\dot\ell_{(0, 1, \hat\gamma_j)}( (x_t - \mu_j(gmst(t)) )/\sigma_j(gmst(t))) )_t \text{ and }
-#' (\dot\ell_{(0, 1, \hat\gamma_k)}( (x_t - \mu_k(gmst(t)) )/\sigma_k(gmst(t))) )_t}
-#'
-#'  are needed for each combination of \eqn{j, k} in the estimation of the ML estimator's covariance matrix.
-#'
-#'
 #' @param data Matrix of observations.
 #' @param parmat Matrix of parameters of the scale-GEV-model. Each column corresponds to one station.
 #' @param temp.cov  Values of temporal covariate; numeric vector of length as `nrow(data)`.
-#' @param rel_par Logical; whether `theta` contains the plain parameters \eqn{\mu, \sigma, \gamma, \alpha},
+#' @param rel_par Logical; whether `theta` contains the plain parameters
+#' \eqn{\mu, \sigma, \gamma, \alpha},
 #' or relative values \eqn{\mu, \mu/\sigma, \gamma, \alpha/\mu}.
 #'
-#' @return A \eqn{d\times d} matrix.
+#' @return A dxd matrix.
 #' @export
 #'
 #' @examples
@@ -184,8 +179,8 @@ Tsigma_inv <- function(par, temp.cov) {
 #' @param Jinv.j Inverse of hessian returned by calling \code{\link[findpoolreg]{fit_scalegev}} on data from station j
 #' @param Jinv.k Inverse of hessian returned by calling \code{\link[findpoolreg]{fit_scalegev}} on data from station k
 #'
-#' @return A 4x4 matrix containing an estimation of
-#' \deqn{ \Cov( \hat \vartheta_j, \hat\vartheta_k).}
+#' @return A 4x4 matrix containing an estimate of
+#' \deqn{ Cov( \theta_j, \theta_k).}
 #' @export
 #'
 #' @examples

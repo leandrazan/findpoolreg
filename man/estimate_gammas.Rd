@@ -14,19 +14,16 @@ estimate_gammas(data, parmat, temp.cov = NULL, rel_par = FALSE)
 
 \item{temp.cov}{Values of temporal covariate; numeric vector of length as \code{nrow(data)}.}
 
-\item{rel_par}{Logical; whether \code{theta} contains the plain parameters \eqn{\mu, \sigma, \gamma, \alpha},
+\item{rel_par}{Logical; whether \code{theta} contains the plain parameters
+\eqn{\mu, \sigma, \gamma, \alpha},
 or relative values \eqn{\mu, \mu/\sigma, \gamma, \alpha/\mu}.}
 }
 \value{
-A \eqn{d\times d} matrix.
+A dxd matrix.
 }
 \description{
-The empirical covariance matrices of
-\deqn{ (\dot\ell_{(0, 1, \hat\gamma_j)}( (x_t - \mu_j(gmst(t)) )/\sigma_j(gmst(t))) )_t \text{ and }
-(\dot\ell_{(0, 1, \hat\gamma_k)}( (x_t - \mu_k(gmst(t)) )/\sigma_k(gmst(t))) )_t}
-}
-\details{
-are needed for each combination of \eqn{j, k} in the estimation of the ML estimator's covariance matrix.
+Computes cross-covariance matrix of score function applied to columns of
+data transformed to standard GEV distribution
 }
 \examples{
 # generate data

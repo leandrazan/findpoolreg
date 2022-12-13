@@ -209,7 +209,8 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
 #' `LS` for the one of a local scaling model.
 #' @param biv_models A vector containing the names of the bivariate extreme value distribution models to fit.
 #'  Must be a subset of
-#' \code{c( "log", "alog", "hr", "neglog", "aneglog", "bilog", "negbilog", "ct","amix")}.
+#' ` "log", "alog", "hr", "neglog", "aneglog", "bilog",`
+#'  `` "negbilog", "ct","amix" `.
 #' @param varmeth Method for estimating the variance-covariance matrix of the stationwise ML estimators, passed to
 #' \code{\link[findpoolreg]{fit_spat_scalegev}}.
 #'  Can be either `chain` (the default) for an estimator based
@@ -230,7 +231,8 @@ bootstrap_onepair_bivmod  <- function(data, temp.cov, B = 300, H0 = "ED",
 #' * `bootstrap.B` The number of bootstrap repetitions that were performed.
 #' * `Model_Sel` The max-stable process model that was selected.
 #' * `biv_pars` Parameters of the selected max-stable process model.
-#' * `boot_teststat` (if `return_boots = TRUE`) Data frame containing the test statistic and corresponding p-value for each bootstrap replicate.
+#' * `boot_teststat` (if `return_boots = TRUE`) Data frame containing the test
+#'    statistic and corresponding p-value for each bootstrap replicate.
 #' * `par_h0` The parameter estimates under H0.
 #' * `H0` Character code of the null hypothesis.
 #' * `X1`, `X2` The labels of pairs on which the hypothesis was tested.

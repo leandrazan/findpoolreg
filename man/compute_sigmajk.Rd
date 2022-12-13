@@ -21,8 +21,8 @@ as computed by \code{\link[findpoolreg]{estimate_gammas}}}
 \item{Jinv.k}{Inverse of hessian returned by calling \code{\link[findpoolreg]{fit_scalegev}} on data from station k}
 }
 \value{
-A 4x4 matrix containing an estimation of
-\deqn{ \Cov( \hat \vartheta_j, \hat\vartheta_k).}
+A 4x4 matrix containing an estimate of
+\deqn{ Cov( \theta_j, \theta_k).}
 }
 \description{
 Estimate covariance of ML estimation applied to two stations

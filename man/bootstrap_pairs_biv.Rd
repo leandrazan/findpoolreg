@@ -31,7 +31,8 @@ Columns should be named or numbered to identify subsets.}
 
 \item{biv_models}{A vector containing the names of the bivariate extreme value distribution models to fit.
 Must be a subset of
-\code{c( "log", "alog", "hr", "neglog", "aneglog", "bilog", "negbilog", "ct","amix")}.}
+\verb{ "log", "alog", "hr", "neglog", "aneglog", "bilog",}
+`` "negbilog", "ct","amix" `.}
 
 \item{varmeth}{Method for estimating the variance-covariance matrix of the stationwise ML estimators, passed to
 \code{\link[findpoolreg]{fit_spat_scalegev}}.
@@ -60,7 +61,8 @@ A tibble with the following columns:
 \item \code{bootstrap.B} The number of bootstrap repetitions that were performed.
 \item \code{Model_Sel} The max-stable process model that was selected.
 \item \code{biv_pars} Parameters of the selected max-stable process model.
-\item \code{boot_teststat} (if \code{return_boots = TRUE}) Data frame containing the test statistic and corresponding p-value for each bootstrap replicate.
+\item \code{boot_teststat} (if \code{return_boots = TRUE}) Data frame containing the test
+statistic and corresponding p-value for each bootstrap replicate.
 \item \code{par_h0} The parameter estimates under H0.
 \item \code{H0} Character code of the null hypothesis.
 \item \code{X1}, \code{X2} The labels of pairs on which the hypothesis was tested.

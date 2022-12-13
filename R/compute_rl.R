@@ -4,9 +4,9 @@
 #' @param Tyrl The return periods for which the RLs are computed
 #' @param type The model: 'stationary'. 'shift' or 'scale'
 #' @param ref_gmst The reference value of the temporal covariate for which the
-#' RL is computed. Ignored when \code{type = "stationary"}.
-#' @return A tibble containg the estimated RL for each combination of \code{Tyrl} and
-#' \code{ref_gmst}.
+#' RL is computed. Ignored when  `type = "stationary"`.
+#' @return A tibble containg the estimated RL for each combination of `Tyrl` and
+#' `ref_gmst`.
 #' @export
 #'
 #' @examples

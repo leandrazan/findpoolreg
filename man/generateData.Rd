@@ -40,7 +40,7 @@ generateData(
 
 \item{MSparam}{A named list containing the parameters for the max-stable process. For \code{gauss}, these must
 be \verb{cov11, cov12, cov22}, for the other models these are \verb{range, smooth}. For further details,
-see \link[SpatialExtremes]{rmaxstab}.}
+see \code{\link[SpatialExtremes]{rmaxstab}}.}
 
 \item{seed}{This seed is set for reproducibility.}
 }

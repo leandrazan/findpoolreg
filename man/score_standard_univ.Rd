@@ -2,7 +2,8 @@
 % Please edit documentation in R/estimate_cov.R
 \name{score_standard_univ}
 \alias{score_standard_univ}
-\title{Computes three dimensional score function of data with margins transformed to standard GEV}
+\title{Computes three dimensional score function of data with margins transformed to
+standard GEV}
 \usage{
 score_standard_univ(x, theta, temp.cov = NULL, rel_par = FALSE)
 }
@@ -17,11 +18,11 @@ score_standard_univ(x, theta, temp.cov = NULL, rel_par = FALSE)
 or relative values \eqn{\mu, \mu/\sigma, \gamma, \alpha/\mu}.}
 }
 \value{
-A matrix of dimension \eqn{3\times} \code{length(x)} containing the values of
-\deqn{ \dot\ell_{(0,1, \gamma)} ( \frac{ x - \mu(gmst(t))}{\sigma(gmst(t))} ).}
+A matrix of dimension  \verb{3 x length(x)}.
 }
 \description{
-Computes three dimensional score function of data with margins transformed to standard GEV
+Computes three dimensional score function of data with margins transformed to
+standard GEV
 }
 \examples{
  xx <- exp((1:100)/100)*evd::rgev(100)

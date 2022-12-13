@@ -14,7 +14,7 @@ compute_rl(theta, Tyrl, type = "scale", ref_gmst = NULL)
 \item{type}{The model: 'stationary'. 'shift' or 'scale'}
 
 \item{ref_gmst}{The reference value of the temporal covariate for which the
-RL is computed. Ignored when \code{type = "stationary"}.}
+RL is computed. Ignored when  \code{type = "stationary"}.}
 }
 \value{
 A tibble containg the estimated RL for each combination of \code{Tyrl} and
