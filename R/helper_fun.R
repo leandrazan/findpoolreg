@@ -1,5 +1,4 @@
 
-# inherited from SpatialExtremes package
 gev2frech <- function (x, loc, scale, shape) {
   if (shape == 0) {
     exp((x - loc)/scale)
