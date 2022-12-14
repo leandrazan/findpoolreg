@@ -14,6 +14,7 @@ vignette: >
 library(findpoolreg)
 library(dplyr)
 ```
+hi
 As we have seen in the vignette about the bootstrap procedure, for
 our simulated data set that comes with the package, we would reject the tiles
 labelled 1,2, 3, 6 and 9.
