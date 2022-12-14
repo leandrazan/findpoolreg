@@ -1,12 +1,12 @@
 Package: findpoolreg
 Type: Package
-Title: Find pooling region for precipitation extremes
+Title: Find Pooling Region for Precipitation Extremes
 Version: 0.1.0
 Author: Leandra Zanger
 Maintainer: Leandra Zanger <Leandra.Zanger@hhu.de>
-Description: This package provides a parametric bootstrap procedure that allows
-    to test whether a set of locations is homogeneous w.r.t. their GEV
-    distribution of precipitation extremes.
+Description: Parametric bootstrap test for assessing whether precipitation 
+    extremes of a set of locations are homogeneous w.r.t. their Generalised
+    Extreme Value distribution.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
