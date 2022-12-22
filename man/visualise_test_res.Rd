@@ -8,7 +8,7 @@ visualise_test_res(
   coord_grid,
   testres,
   method = "holm",
-  plot_type = "rejection",
+  plot_type = "pvals",
   level = 0.1,
   bins = c(0, 0.05, 0.075, 0.1, 1),
   loi = NULL,
@@ -31,7 +31,7 @@ set \code{stationData = TRUE}.}
 
 \item{method}{The method used for adjusting p-values. Must be one of \code{holm} (for the Holm stepdown procedure),
 \code{BY} (for the Benjamini Yekutieli stepup procedure), \code{BH} (for the Benjamini Hochberg step-up procedure) or
-\code{boot} when not adjusting for multiple testing.}
+\code{IM} when not adjusting for multiple testing.}
 
 \item{plot_type}{The plot type: either \code{rejection}, then regions are shaded according to test result,
 i.e. rejection or no rejection or \code{pvals}, then  regions are shaded according to their (adjusted) p-values.}
@@ -55,6 +55,12 @@ A leaflet plot.
 }
 \description{
 Visualise bootstrap test results for pairwise testing
+}
+\details{
+When \code{plot_type = "pvals"}, each grid cell (or Station marker when using station data) is shaded in
+a colour representing its p-value. The darker the colour, the smaller the p-value.
+When \code{plot_type = "rejections"}, each grid cell (or Station marker when using station data) is either
+coloured in blue, when the grid cell (station) is not rejected, or shaded in red, when it is rejected.
 }
 \examples{
 
