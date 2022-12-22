@@ -12,12 +12,19 @@ visualise_test_res(
   level = 0.1,
   bins = c(0, 0.05, 0.075, 0.1, 1),
   loi = NULL,
+  stationData = FALSE,
   ...
 )
 }
 \arguments{
-\item{coord_grid}{A dataframe containing the grid coordinates in the columns \verb{from_lon,to_lon, from_lat, to_lat}.
-Can also contain the grid centers through columns \code{meanlon}, \code{meanlat}.}
+\item{coord_grid}{A dataframe containing the coordinates of the grid edges in columns
+named \verb{from_lon, to_lon, from_lat, to_lat}.
+Can also contain the grid centers named \code{meanlon}, \code{meanlat}. Further, the same region labels
+used in the bootstrap procedure must be given in a column named \code{Region}.
+When station data is used instead of
+grid data, provide the coordinates of the stations in columns named \code{lon} and \code{lat} instead,
+and the Station labels in a column named \code{Station}. In this case,
+set \code{stationData = TRUE}.}
 
 \item{testres}{Result of bootstrap test as obtained from  \code{\link[findpoolreg]{bootstrap_subsets_ms}} or
 \code{\link[findpoolreg]{bootstrap_pairs_biv}}.}
@@ -33,11 +40,15 @@ i.e. rejection or no rejection or \code{pvals}, then  regions are shaded accordi
 
 \item{bins}{Bins for p-value shades when \code{plot_type = pvals}.}
 
-\item{loi}{Location(s) of interest, passed as numeric vector containing location labels. Can be omitted when location of interest is of length 1.}
+\item{loi}{Location(s) of interest, passed as numeric vector containing location labels.
+Can be omitted when location of interest is of length 1.}
 
-\item{...}{additional arguments passed to \code{\link[leaflet]{leafletOptions}}, e.g. \code{zoomControl = FALSE}. Further,
-the arguments \code{position} (one of \verb{bottomright, bottomleft, topright, topleft}) which gives the legend position, \code{width} and \code{height}
-for the plot size can be given.}
+\item{stationData}{Logical; whether station data is used instead of gridded data.}
+
+\item{...}{additional arguments passed to \code{leafletOptions} from \code{\link[leaflet]{leaflet}},
+e.g. \code{zoomControl = FALSE}. Further,
+the arguments \code{position} (one of \verb{bottomright, bottomleft, topright, topleft}) which gives the legend position,
+\code{width} and \code{height} for the plot size can be given.}
 }
 \value{
 A leaflet plot.
