@@ -23,7 +23,6 @@ htheta <- function(par.mat, equal_distr  = TRUE){
                       ncol = d,
                       byrow = TRUE)
   }
-
   as.vector(t(par.mat[ , 1:(d-1)])) -  as.vector(t(par.mat[ , 2:d]))
 
 }
