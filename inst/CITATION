@@ -1,0 +1,16 @@
+citHeader("To cite findpoolreg in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title    = "findpoolreg: Find a possible pooling region for precipitation extremes",
+  author   = "Leandra Zanger",
+  journal  = ,
+  year     = ,
+  volume   = ,
+  number   = ,
+  pages    = ,
+  url      = "https://github.com/leandrazan/findpoolreg",
+  textVersion = paste(
+
+  )
+)
