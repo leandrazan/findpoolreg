@@ -1,0 +1,582 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.6.29) (preloaded format=pdftex 2020.10.21)  13 DEC 2022 16:20
+entering extended mode
+**C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd
+(C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:3: 
+Undefined control sequence.
+l.3 \name
+         {compute_sigmajk}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:3: 
+Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.3 \name{compute_
+                  sigmajk}
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:3: 
+Extra }, or forgotten $.
+l.3 \name{compute_sigmajk}
+                          
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:4: 
+Undefined control sequence.
+l.4 \alias
+          {compute_sigmajk}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:5: 
+Undefined control sequence.
+l.5 \title
+          {Estimate covariance of ML estimation applied to two stations}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:6: 
+Undefined control sequence.
+l.6 \usage
+          {
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:9: 
+Undefined control sequence.
+l.9 \arguments
+              {
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:10:
+ Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+\item ->\par 
+             \hang \textindent 
+l.10 \item
+          {par.j}{Estimated parameter vector for station j}
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:10:
+ Missing } inserted.
+<inserted text> 
+                }
+<to be read again> 
+                   $
+<to be read again> 
+                   \par 
+\item ->\par 
+             \hang \textindent 
+l.10 \item
+          {par.j}{Estimated parameter vector for station j}
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+
+Overfull \hbox (249.44322pt too wide) in paragraph at lines 3--10
+[]\tenrm compute$[]\teni igmajk[][][][]$ |
+
+\hbox(7.5+2.5)x469.75499
+.\hbox(0.0+0.0)x20.0
+.\tenrm c
+.\tenrm o
+.\tenrm m
+.\tenrm p
+.etc.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:15:
+ Undefined control sequence.
+l.15 as computed by \code
+                         {\link[findpoolreg]{estimate_gammas}}}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:15:
+ Undefined control sequence.
+l.15 as computed by \code{\link
+                               [findpoolreg]{estimate_gammas}}}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:15:
+ Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.15 ...uted by \code{\link[findpoolreg]{estimate_
+                                                  gammas}}}
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:15:
+ Extra }, or forgotten $.
+l.15 ... \code{\link[findpoolreg]{estimate_gammas}
+                                                  }}
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:15:
+ Extra }, or forgotten $.
+l.15 ...\code{\link[findpoolreg]{estimate_gammas}}
+                                                  }
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:15:
+ Extra }, or forgotten $.
+l.15 ...code{\link[findpoolreg]{estimate_gammas}}}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:16:
+ Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.16 
+     
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:19:
+ Undefined control sequence.
+l.19 ...verse of hessian returned by calling \code
+                                                  {\link[findpoolreg]{fit_sc...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:19:
+ Undefined control sequence.
+l.19 ...of hessian returned by calling \code{\link
+                                                  [findpoolreg]{fit_scalegev...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:19:
+ Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.19 ...d by calling \code{\link[findpoolreg]{fit_
+                                                  scalegev}} on data from st...
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:19:
+ Extra }, or forgotten $.
+l.19 ...ing \code{\link[findpoolreg]{fit_scalegev}
+                                                  } on data from station j}
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:19:
+ Extra }, or forgotten $.
+l.19 ...ng \code{\link[findpoolreg]{fit_scalegev}}
+                                                   on data from station j}
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:19:
+ Extra }, or forgotten $.
+l.19 ...eg]{fit_scalegev}} on data from station j}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:20:
+ Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.20 
+     
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:21:
+ Undefined control sequence.
+l.21 ...verse of hessian returned by calling \code
+                                                  {\link[findpoolreg]{fit_sc...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:21:
+ Undefined control sequence.
+l.21 ...of hessian returned by calling \code{\link
+                                                  [findpoolreg]{fit_scalegev...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:21:
+ Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.21 ...d by calling \code{\link[findpoolreg]{fit_
+                                                  scalegev}} on data from st...
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:21:
+ Extra }, or forgotten $.
+l.21 ...ing \code{\link[findpoolreg]{fit_scalegev}
+                                                  } on data from station k}
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:21:
+ Extra }, or forgotten $.
+l.21 ...ng \code{\link[findpoolreg]{fit_scalegev}}
+                                                   on data from station k}
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:21:
+ Extra }, or forgotten $.
+l.21 ...eg]{fit_scalegev}} on data from station k}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:22:
+ Extra }, or forgotten $.
+l.22 }
+      
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:23:
+ Undefined control sequence.
+l.23 \value
+           {
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:25:
+ Undefined control sequence.
+l.25 \deqn
+          { Cov( \hat \vartheta_j, \hat\vartheta_k).}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:27:
+ Undefined control sequence.
+l.27 \description
+                 {
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:30:
+ Undefined control sequence.
+l.30 \examples
+              {
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:31:
+ Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.31 
+     
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:31:
+ Missing } inserted.
+<inserted text> 
+                }
+<to be read again> 
+                   $
+<to be read again> 
+                   \par 
+l.31 
+     
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+
+Overfull \hbox (388.5845pt too wide) in paragraph at lines 21--31
+[][]\tenrm Inverse of hes-sian re-turned by call-ing [findpoolreg]fit$[]\teni c
+alegevondatafromstationk[][][]$ |
+
+\hbox(9.58334+2.86108)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\hbox(6.94444+0.0)x0.0, glue set - 31.52786fil
+..\glue 0.0 plus 1.0fil minus 1.0fil
+..\tenrm J
+..\tenrm i
+..\tenrm n
+..\kern-0.27779
+..etc.
+.\tenrm I
+.\tenrm n
+.\kern-0.27779
+.etc.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:32:
+ You can't use `macro parameter character #' in vertical mode.
+l.32 #
+       generate data
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:38:
+ You can't use `macro parameter character #' in vertical mode.
+l.38 #
+       compute ML estimate at each station
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:39:
+ Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.39 mle1 <- fit_
+                 scalegev(x[, 1], temp.cov =cvrt)
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:41:
+ Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.41 
+     
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (63.07611pt too wide) in paragraph at lines 38--41
+[]\tenrm compute ML es-ti-mate at each sta-tion mle1 <- fit$[]\teni calegev\ten
+rm (\teni x\tenrm [\teni ; \tenrm 1]\teni ; temp:cov \tenrm = \teni cvrt\tenrm 
+)\teni mle\tenrm 3 \teni < \tensy  \teni fit[]calegev\tenrm (\teni x\tenrm [\te
+ni ; \tenrm 3]\teni ; temp:cov \tenrm =|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm c
+.\tenrm o
+.\tenrm m
+.\tenrm p
+.etc.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:43:
+ You can't use `macro parameter character #' in vertical mode.
+l.43 #
+       compute covariance between ML estimate of station 1 and ML estimate o...
+Sorry, but I'm not programmed to handle this case;
+I'll just pretend that you didn't ask for it.
+If you're in the wrong mode, you might be able to
+return to the right one by typing `I}' or `I$' or `I\par'.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:44:
+ Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.44 Gams <-  estimate_
+                       gammas(x[, c(1,3)], parmat = cbind(mle1$mle, mle3$mle),
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+C:/Users/leaz9/OneDrive/Dokumente/GitHub/findpoolreg/man/compute_sigmajk.Rd:48:
+ Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.48 
+     
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (109.30582pt too wide) in paragraph at lines 43--48
+[]\tenrm compute co-vari-ance be-tween ML es-ti-mate of sta-tion 1 and ML es-ti
+-mate of sta-tion 3 Gams <- estimate$[]\teni ammas\tenrm (\teni x\tenrm [\teni 
+; c\tenrm (1\teni ; \tenrm 3)]\teni ; parmat \tenrm =|
+
+\hbox(7.5+2.86108)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm c
+.\tenrm o
+.\tenrm m
+.\tenrm p
+.etc.
+
+
+Overfull \hbox (3.34944pt too wide) in paragraph at lines 43--48
+\teni cbind\tenrm (\teni mle\tenrm 1$mle, mle3$\teni mle\tenrm )\teni ; temp:co
+v \tenrm = \teni cvrt; rel[]ar \tenrm = \teni FALSE\tenrm )\teni compute[]igmaj
+k\tenrm (\teni mle\tenrm 1$mle, mle3$\teni mle; Gams\tenrm [1 :|
+
+\hbox(7.5+2.86108)x469.75499, glue set - 1.0
+.\teni c
+.\teni b
+.\teni i
+.\teni n
+.\teni d
+.etc.
+
+)
+! Emergency stop.
+<*> ...e/GitHub/findpoolreg/man/compute_sigmajk.Rd
+                                                  
+*** (job aborted, no legal \end found)
+
+!  ==> Fatal error occurred, no output PDF file produced!
