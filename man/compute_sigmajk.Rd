@@ -22,7 +22,7 @@ as computed by \code{\link[findpoolreg]{estimate_gammas}}}
 }
 \value{
 A 4x4 matrix containing an estimate of
-\deqn{ Cov( \theta_j, \theta_k).}
+\eqn{ Cov( \theta_j, \theta_k)}.
 }
 \description{
 Estimate covariance of ML estimation applied to two stations

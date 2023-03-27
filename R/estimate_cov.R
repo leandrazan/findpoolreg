@@ -167,7 +167,7 @@ Tsigma_inv <- function(par, temp.cov) {
 
 }
 
-# compute Sigma_{jk}
+# compute covariance matrix of ML estimation
 
 #' Estimate covariance of ML estimation applied to two stations
 #'
@@ -180,7 +180,7 @@ Tsigma_inv <- function(par, temp.cov) {
 #' @param Jinv.k Inverse of hessian returned by calling \code{\link[findpoolreg]{fit_scalegev}} on data from station k
 #'
 #' @return A 4x4 matrix containing an estimate of
-#' \deqn{ Cov( \theta_j, \theta_k).}
+#' \eqn{ Cov( \theta_j, \theta_k)}.
 #' @export
 #'
 #' @examples

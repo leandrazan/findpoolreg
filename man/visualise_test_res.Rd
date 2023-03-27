@@ -90,7 +90,12 @@ visualise_test_res(coord_grid = coord_grid, testres = bootres,
 visualise_test_res(coord_grid = coord_grid, testres = bootres, method = "BY",
                    loi = 5)
 
-pvisualise_test_res(coord_grid = coord_grid, testres = bootres, method = "BH",
+visualise_test_res(coord_grid = coord_grid, testres = bootres, method = "BH",
                     plot_type = "pvals", loi = 5)
+
+### assuming this was station data instead (stations located at bottom left corners of tiles)
+coord_grid1 <- coord_grid[, c(1:2,5)] \%>\% dplyr::rename("lat" = "from_lat", "lon" = "from_lon", "Station" = "Region")
+visualise_test_res(coord_grid = coord_grid1, testres = bootres, method = "BH",
+plot_type = "pvals", stationData = TRUE,  loi = 5)
 }
 }
